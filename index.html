@@ -1,0 +1,517 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --navy:#0d1b2a;--navy2:#1a2e45;--navy3:#243b55;
+    --accent:#00c9a7;--accent2:#0099ff;
+    --danger:#e24b4a;--warn:#ef9f27;--success:#639922;
+    --text:#e8eef4;--text2:#8ca0b5;--text3:#4a6380;
+    --card:#162030;--card2:#1d2d40;--border:#1e3148;
+    --radius:10px;
+  }
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--navy);color:var(--text);min-height:600px;overflow:hidden}
+  #auth-screen{display:flex;align-items:center;justify-content:center;min-height:600px}
+  .auth-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2.5rem;width:360px;max-width:95vw}
+  .auth-logo{text-align:center;margin-bottom:1.8rem}
+  .auth-logo .icon{width:52px;height:52px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:24px}
+  .auth-logo h1{font-size:1.3rem;font-weight:600;letter-spacing:-0.02em}
+  .auth-logo p{font-size:12px;color:var(--text2);margin-top:4px}
+  .field{margin-bottom:1rem}
+  .field label{display:block;font-size:12px;color:var(--text2);margin-bottom:6px;font-weight:500;letter-spacing:0.04em;text-transform:uppercase}
+  .field input{width:100%;background:var(--navy);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:14px;outline:none;transition:border-color 0.2s}
+  .field input:focus{border-color:var(--accent)}
+  .btn-primary{width:100%;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:8px;padding:11px;color:#fff;font-size:14px;font-weight:600;cursor:pointer}
+  .btn-primary:hover{opacity:0.9}
+  .btn-primary:disabled{opacity:0.5;cursor:not-allowed}
+  .err-msg{color:var(--danger);font-size:12px;margin-top:8px;text-align:center}
+  #app{display:none;height:600px;overflow:hidden}
+  .sidebar{width:200px;background:var(--card);border-right:1px solid var(--border);height:600px;display:flex;flex-direction:column;position:fixed;left:0;top:0;z-index:10}
+  .sidebar-logo{padding:18px 16px 14px;border-bottom:1px solid var(--border)}
+  .sidebar-logo .s-icon{width:30px;height:30px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-size:14px;vertical-align:middle;margin-right:8px}
+  .sidebar-logo span{font-size:13px;font-weight:700;vertical-align:middle}
+  .nav{flex:1;padding:12px 8px}
+  .nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;cursor:pointer;font-size:13px;color:var(--text2);margin-bottom:2px;transition:all 0.15s}
+  .nav-item:hover{background:var(--card2);color:var(--text)}
+  .nav-item.active{background:rgba(0,201,167,0.12);color:var(--accent)}
+  .nav-item .ni{font-size:15px;width:18px;text-align:center}
+  .sidebar-user{padding:14px 16px;border-top:1px solid var(--border)}
+  .sidebar-user .u-name{font-size:12px;font-weight:600}
+  .sidebar-user .u-role{font-size:11px;color:var(--text2)}
+  .sidebar-user .u-badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:20px;margin-top:4px;font-weight:600}
+  .badge-admin{background:rgba(0,201,167,0.15);color:var(--accent)}
+  .badge-staff{background:rgba(0,153,255,0.15);color:var(--accent2)}
+  .logout-btn{font-size:11px;color:var(--text3);cursor:pointer;margin-top:8px;display:block}
+  .logout-btn:hover{color:var(--danger)}
+  .main{margin-left:200px;height:600px;overflow-y:auto;padding:20px 22px}
+  .page{display:none}
+  .page.active{display:block}
+  .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+  .topbar h2{font-size:1.1rem;font-weight:700;letter-spacing:-0.02em}
+  .topbar .sub{font-size:12px;color:var(--text2);margin-top:2px}
+  .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+  .stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px}
+  .stat-card .sc-label{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:0.06em;font-weight:600}
+  .stat-card .sc-val{font-size:1.6rem;font-weight:700;margin:4px 0 2px;letter-spacing:-0.03em}
+  .stat-card .sc-sub{font-size:11px;color:var(--text2)}
+  .sc-out .sc-val{color:var(--accent2)}
+  .sc-over .sc-val{color:var(--danger)}
+  .sc-in .sc-val{color:var(--accent)}
+  .sc-total .sc-val{color:var(--text)}
+  .table-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+  .table-header{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+  .table-header h3{font-size:13px;font-weight:600}
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  th{background:var(--card2);padding:9px 14px;text-align:left;font-size:11px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:0.05em}
+  td{padding:10px 14px;border-top:1px solid var(--border);color:var(--text2)}
+  td:first-child{color:var(--text);font-weight:500}
+  tr:hover td{background:rgba(255,255,255,0.02)}
+  .status-pill{display:inline-block;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:600}
+  .pill-out{background:rgba(0,153,255,0.15);color:var(--accent2)}
+  .pill-in{background:rgba(99,153,34,0.2);color:#97c459}
+  .pill-over{background:rgba(226,75,74,0.15);color:var(--danger)}
+  .action-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+  .action-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+  .action-card h3{font-size:13px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+  .action-card h3 .icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px}
+  .icon-out{background:rgba(0,153,255,0.15)}
+  .icon-in{background:rgba(0,201,167,0.15)}
+  .form-row{margin-bottom:10px}
+  .form-row label{display:block;font-size:11px;color:var(--text2);margin-bottom:5px;font-weight:500;text-transform:uppercase;letter-spacing:0.04em}
+  .form-row input,.form-row select,.form-row textarea{width:100%;background:var(--navy);border:1px solid var(--border);border-radius:7px;padding:8px 12px;color:var(--text);font-size:13px;outline:none}
+  .form-row input:focus,.form-row select:focus{border-color:var(--accent)}
+  .form-row select option{background:var(--navy)}
+  .btn-action{width:100%;padding:9px;border:none;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;margin-top:4px;transition:opacity 0.15s}
+  .btn-action:disabled{opacity:0.5;cursor:not-allowed}
+  .btn-out{background:rgba(0,153,255,0.25);color:var(--accent2)}
+  .btn-in{background:rgba(0,201,167,0.25);color:var(--accent)}
+  .btn-action:hover:not(:disabled){opacity:0.8}
+  .filters{display:flex;gap:10px;margin-bottom:14px;align-items:center;flex-wrap:wrap}
+  .filters input,.filters select{background:var(--card);border:1px solid var(--border);border-radius:7px;padding:7px 12px;color:var(--text);font-size:12px;outline:none}
+  .filters select option{background:var(--navy)}
+  .admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .admin-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px}
+  .admin-card h3{font-size:13px;font-weight:600;margin-bottom:14px}
+  .user-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)}
+  .user-row:last-child{border-bottom:none}
+  .user-info .un{font-size:13px;font-weight:500}
+  .user-info .ud{font-size:11px;color:var(--text2)}
+  .btn-sm{padding:4px 10px;border:1px solid var(--border);border-radius:5px;font-size:11px;cursor:pointer;background:transparent;color:var(--text2)}
+  .btn-sm:hover{background:var(--card2);color:var(--text)}
+  .btn-danger{border-color:rgba(226,75,74,0.4);color:var(--danger)}
+  .btn-danger:hover{background:rgba(226,75,74,0.1)}
+  .export-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:rgba(0,201,167,0.15);color:var(--accent);border:1px solid rgba(0,201,167,0.3);border-radius:7px;font-size:12px;font-weight:600;cursor:pointer}
+  .export-btn:hover{background:rgba(0,201,167,0.25)}
+  .toast{position:fixed;bottom:20px;right:20px;background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px 18px;font-size:13px;z-index:999;transform:translateY(80px);transition:transform 0.3s;pointer-events:none}
+  .toast.show{transform:translateY(0)}
+  .toast-s{border-left:3px solid var(--accent)}
+  .toast-e{border-left:3px solid var(--danger)}
+  ::-webkit-scrollbar{width:5px}
+  ::-webkit-scrollbar-track{background:transparent}
+  ::-webkit-scrollbar-thumb{background:var(--border);border-radius:5px}
+  .empty-row td{text-align:center;padding:24px;color:var(--text3)}
+  .avatar{width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin-right:8px;vertical-align:middle;flex-shrink:0}
+  .flex-center{display:flex;align-items:center}
+  .loading-row td{text-align:center;padding:24px;color:var(--text3)}
+  .spinner{display:inline-block;width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:6px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .db-status{font-size:10px;padding:2px 8px;border-radius:20px;margin-left:8px;font-weight:600}
+  .db-live{background:rgba(0,201,167,0.15);color:var(--accent)}
+  .db-err{background:rgba(226,75,74,0.15);color:var(--danger)}
+</style>
+</head>
+<body>
+
+<div id="auth-screen">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <div class="icon">🏢</div>
+      <h1>StaffTrack</h1>
+      <p>Movement Register — Live Database</p>
+    </div>
+    <div class="field">
+      <label>Email Address</label>
+      <input type="email" id="login-email" placeholder="you@company.com">
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" id="login-pass" placeholder="••••••••">
+    </div>
+    <button class="btn-primary" id="login-btn" onclick="doLogin()">Sign In</button>
+    <div class="err-msg" id="login-err"></div>
+    <div style="margin-top:16px;padding:12px;background:var(--navy);border-radius:8px;font-size:11px;color:var(--text2)">
+      First time? Run the SQL setup in Supabase, then log in with <strong style="color:var(--text)">admin@company.com / admin123</strong>
+    </div>
+  </div>
+</div>
+
+<div id="app">
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <span class="s-icon">🏢</span>
+      <span>StaffTrack</span>
+    </div>
+    <nav class="nav">
+      <div class="nav-item active" onclick="showPage('dashboard',this)"><span class="ni">📊</span> Dashboard</div>
+      <div class="nav-item" onclick="showPage('movement',this)"><span class="ni">🚶</span> Movement</div>
+      <div class="nav-item" onclick="showPage('history',this)"><span class="ni">📋</span> History</div>
+      <div class="nav-item" id="nav-admin" onclick="showPage('admin',this)"><span class="ni">⚙️</span> Admin Panel</div>
+    </nav>
+    <div class="sidebar-user">
+      <div class="u-name" id="sb-name">—</div>
+      <div class="u-role" id="sb-dept">—</div>
+      <span class="u-badge" id="sb-badge">—</span><span class="db-status db-live" id="db-status">● Live</span>
+      <span class="logout-btn" onclick="doLogout()">Sign out</span>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="page active" id="page-dashboard">
+      <div class="topbar">
+        <div><h2>Dashboard</h2><div class="sub" id="dash-time">—</div></div>
+        <button class="export-btn" onclick="refreshAll()">↻ Refresh</button>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card sc-out"><div class="sc-label">Currently Out</div><div class="sc-val" id="stat-out">—</div><div class="sc-sub">staff members</div></div>
+        <div class="stat-card sc-over"><div class="sc-label">Overdue Returns</div><div class="sc-val" id="stat-over">—</div><div class="sc-sub">past expected time</div></div>
+        <div class="stat-card sc-in"><div class="sc-label">Checked In</div><div class="sc-val" id="stat-in">—</div><div class="sc-sub">currently present</div></div>
+        <div class="stat-card sc-total"><div class="sc-label">Total Staff</div><div class="sc-val" id="stat-total">—</div><div class="sc-sub">registered</div></div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header"><h3>Currently Out</h3></div>
+        <table><thead><tr><th>Staff Member</th><th>Department</th><th>Destination</th><th>Checked Out</th><th>Expected Return</th><th>Status</th></tr></thead>
+        <tbody id="tbl-out"><tr class="loading-row"><td colspan="6"><span class="spinner"></span>Loading...</td></tr></tbody></table>
+      </div>
+    </div>
+
+    <div class="page" id="page-movement">
+      <div class="topbar"><div><h2>Record Movement</h2><div class="sub">Check staff in or out</div></div></div>
+      <div class="action-grid">
+        <div class="action-card">
+          <h3><span class="icon icon-out">🚪</span> Check-Out (Exit)</h3>
+          <div class="form-row"><label>Staff Member</label><select id="out-staff"></select></div>
+          <div class="form-row"><label>Destination</label><input type="text" id="out-dest" placeholder="e.g. Client Meeting, Field Visit"></div>
+          <div class="form-row"><label>Expected Return</label><input type="datetime-local" id="out-return"></div>
+          <div class="form-row"><label>Notes</label><input type="text" id="out-note" placeholder="Optional notes"></div>
+          <button class="btn-action btn-out" id="btn-checkout" onclick="checkOut()">Record Check-Out</button>
+        </div>
+        <div class="action-card">
+          <h3><span class="icon icon-in">✅</span> Check-In (Return)</h3>
+          <div class="form-row"><label>Staff Member (Currently Out)</label><select id="in-staff"></select></div>
+          <div class="form-row"><label>Return Notes</label><input type="text" id="in-note" placeholder="Optional return notes"></div>
+          <button class="btn-action btn-in" id="btn-checkin" onclick="checkIn()" style="margin-top:80px">Record Check-In</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="page" id="page-history">
+      <div class="topbar"><div><h2>Movement History</h2><div class="sub">Full audit log from database</div></div>
+        <button class="export-btn" onclick="exportCSV()">⬇ Export CSV</button>
+      </div>
+      <div class="filters">
+        <input type="text" id="f-search" placeholder="Search name or destination..." oninput="renderHistory()" style="flex:1;min-width:140px">
+        <select id="f-dept" onchange="renderHistory()"><option value="">All Departments</option></select>
+        <select id="f-status" onchange="renderHistory()">
+          <option value="">All Status</option><option value="out">Out</option><option value="returned">Returned</option>
+        </select>
+        <input type="date" id="f-date" onchange="renderHistory()">
+      </div>
+      <div class="table-wrap">
+        <table><thead><tr><th>Staff</th><th>Dept</th><th>Destination</th><th>Check-Out</th><th>Check-In</th><th>Status</th></tr></thead>
+        <tbody id="tbl-hist"><tr class="loading-row"><td colspan="6"><span class="spinner"></span>Loading...</td></tr></tbody></table>
+      </div>
+    </div>
+
+    <div class="page" id="page-admin">
+      <div class="topbar"><div><h2>Admin Panel</h2><div class="sub">Manage users & reports</div></div></div>
+      <div class="admin-grid">
+        <div class="admin-card">
+          <h3>Staff Members</h3>
+          <div id="user-list"><span class="spinner"></span> Loading...</div>
+        </div>
+        <div class="admin-card">
+          <h3>Add New User</h3>
+          <div class="form-row"><label>Full Name</label><input type="text" id="add-name" placeholder="Full name"></div>
+          <div class="form-row"><label>Email</label><input type="email" id="add-email" placeholder="email@company.com"></div>
+          <div class="form-row"><label>Password</label><input type="password" id="add-pass" placeholder="Password"></div>
+          <div class="form-row"><label>Department</label>
+            <select id="add-dept"><option>IT</option><option>HR</option><option>Finance</option><option>Operations</option><option>Sales</option><option>Management</option></select>
+          </div>
+          <div class="form-row"><label>Role</label>
+            <select id="add-role"><option value="staff">Staff</option><option value="admin">Admin</option></select>
+          </div>
+          <button class="btn-action btn-in" id="btn-adduser" onclick="addUser()">Add User</button>
+          <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+            <h3 style="margin-bottom:10px">Export Reports</h3>
+            <button class="export-btn" onclick="exportCSV()" style="margin-bottom:8px;width:100%;justify-content:center">⬇ Export Movement Log (CSV)</button>
+            <button class="export-btn" onclick="exportUsers()" style="width:100%;justify-content:center">⬇ Export User List (CSV)</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPA_URL = 'https://uxxlmmlnagqriklkdosk.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV4eGxtbWxuYWdxcmlrbGtkb3NrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4NDYxNzcsImV4cCI6MjA5MzQyMjE3N30._p9fYjZMrXm6YEPzwMBCC5FLFXaeuFcA12gVVM_duS0';
+
+const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
+
+let currentUser = null;
+let allUsers = [];
+let allMovements = [];
+
+const COLORS = ['#00c9a7','#0099ff','#ef9f27','#d4537e','#5dcaa5','#e24b4a','#97c459','#7f77dd'];
+
+function initials(name){return (name||'').split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase()}
+function colorFor(id){const idx=parseInt(String(id).replace(/\D/g,'').slice(-3))%COLORS.length;return COLORS[isNaN(idx)?0:idx]}
+
+function fmtDT(iso){
+  if(!iso)return '—';
+  const d=new Date(iso);
+  return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})+' '+d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+}
+
+function isOverdue(m){return !m.check_in && m.expected_return && new Date(m.expected_return)<new Date()}
+
+async function doLogin(){
+  const email=document.getElementById('login-email').value.trim();
+  const pass=document.getElementById('login-pass').value;
+  const btn=document.getElementById('login-btn');
+  if(!email||!pass){document.getElementById('login-err').textContent='Please enter email and password';return}
+  btn.disabled=true;btn.textContent='Signing in...';
+  try{
+    const {data,error}=await sb.from('users').select('*').eq('email',email).eq('password',pass).single();
+    if(error||!data){document.getElementById('login-err').textContent='Invalid email or password';btn.disabled=false;btn.textContent='Sign In';return}
+    currentUser=data;
+    document.getElementById('auth-screen').style.display='none';
+    document.getElementById('app').style.display='block';
+    document.getElementById('sb-name').textContent=data.name;
+    document.getElementById('sb-dept').textContent=data.department||'';
+    const b=document.getElementById('sb-badge');
+    b.textContent=data.role==='admin'?'Admin':'Staff';
+    b.className='u-badge '+(data.role==='admin'?'badge-admin':'badge-staff');
+    document.getElementById('nav-admin').style.display=data.role==='admin'?'flex':'none';
+    updateClock();setInterval(updateClock,60000);
+    await refreshAll();
+  }catch(e){document.getElementById('login-err').textContent='Connection error: '+e.message;btn.disabled=false;btn.textContent='Sign In'}
+}
+
+function doLogout(){
+  currentUser=null;allUsers=[];allMovements=[];
+  document.getElementById('app').style.display='none';
+  document.getElementById('auth-screen').style.display='flex';
+  document.getElementById('login-err').textContent='';
+  document.getElementById('login-btn').disabled=false;
+  document.getElementById('login-btn').textContent='Sign In';
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-dashboard').classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.querySelector('.nav-item').classList.add('active');
+}
+
+function updateClock(){
+  document.getElementById('dash-time').textContent=new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+' • '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+}
+
+async function refreshAll(){
+  try{
+    const [{data:u},{data:m}]=await Promise.all([
+      sb.from('users').select('*').order('name'),
+      sb.from('movements').select('*').order('check_out',{ascending:false})
+    ]);
+    allUsers=u||[];allMovements=m||[];
+    document.getElementById('db-status').textContent='● Live';
+    document.getElementById('db-status').className='db-status db-live';
+    renderDashboard();
+  }catch(e){
+    document.getElementById('db-status').textContent='● Offline';
+    document.getElementById('db-status').className='db-status db-err';
+    showToast('DB error: '+e.message,'e');
+  }
+}
+
+function renderDashboard(){
+  const out=allMovements.filter(m=>!m.check_in);
+  const over=out.filter(m=>isOverdue(m));
+  const outUserIds=new Set(out.map(m=>m.user_id));
+  document.getElementById('stat-out').textContent=out.length;
+  document.getElementById('stat-over').textContent=over.length;
+  document.getElementById('stat-in').textContent=Math.max(0,allUsers.length-outUserIds.size);
+  document.getElementById('stat-total').textContent=allUsers.length;
+  const tbody=document.getElementById('tbl-out');
+  if(!out.length){tbody.innerHTML='<tr class="empty-row"><td colspan="6">No staff currently out</td></tr>';return}
+  tbody.innerHTML=out.map(m=>{
+    const od=isOverdue(m);
+    const c=colorFor(m.user_id);
+    const av=`<div class="avatar" style="background:${c}22;color:${c}">${initials(m.name)}</div>`;
+    return`<tr><td><div class="flex-center">${av}${m.name}</div></td><td>${m.department||'—'}</td><td>${m.destination||'—'}</td><td>${fmtDT(m.check_out)}</td><td>${fmtDT(m.expected_return)}</td><td><span class="status-pill ${od?'pill-over':'pill-out'}">${od?'Overdue':'Out'}</span></td></tr>`
+  }).join('');
+}
+
+function showPage(id,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  el.classList.add('active');
+  if(id==='movement')populateSelects();
+  if(id==='history'){populateDeptFilter();renderHistory();}
+  if(id==='admin')renderAdmin();
+}
+
+function populateSelects(){
+  const outIds=new Set(allMovements.filter(m=>!m.check_in).map(m=>m.user_id));
+  const avail=allUsers.filter(u=>!outIds.has(u.id));
+  const outU=allUsers.filter(u=>outIds.has(u.id));
+  document.getElementById('out-staff').innerHTML=avail.length?avail.map(u=>`<option value="${u.id}">${u.name} (${u.department})</option>`).join(''):'<option value="">All staff are in</option>';
+  document.getElementById('in-staff').innerHTML=outU.length?outU.map(u=>`<option value="${u.id}">${u.name} (${u.department})</option>`).join(''):'<option value="">No staff currently out</option>';
+  const now=new Date();now.setHours(now.getHours()+2);
+  document.getElementById('out-return').value=now.toISOString().slice(0,16);
+}
+
+async function checkOut(){
+  const uid=document.getElementById('out-staff').value;
+  if(!uid){showToast('No staff available','e');return}
+  const dest=document.getElementById('out-dest').value.trim();
+  if(!dest){showToast('Please enter a destination','e');return}
+  const ret=document.getElementById('out-return').value;
+  const note=document.getElementById('out-note').value;
+  const u=allUsers.find(x=>x.id===uid);
+  const btn=document.getElementById('btn-checkout');
+  btn.disabled=true;btn.textContent='Saving...';
+  try{
+    const {error}=await sb.from('movements').insert({user_id:uid,name:u.name,department:u.department,destination:dest,check_out:new Date().toISOString(),expected_return:ret?new Date(ret).toISOString():null,note});
+    if(error)throw error;
+    document.getElementById('out-dest').value='';document.getElementById('out-note').value='';
+    showToast(`${u.name} checked out`,'s');
+    await refreshAll();populateSelects();
+  }catch(e){showToast('Error: '+e.message,'e')}
+  btn.disabled=false;btn.textContent='Record Check-Out';
+}
+
+async function checkIn(){
+  const uid=document.getElementById('in-staff').value;
+  if(!uid){showToast('No staff to check in','e');return}
+  const note=document.getElementById('in-note').value;
+  const mv=allMovements.find(m=>m.user_id===uid&&!m.check_in);
+  if(!mv){showToast('No active checkout found','e');return}
+  const btn=document.getElementById('btn-checkin');
+  btn.disabled=true;btn.textContent='Saving...';
+  try{
+    const {error}=await sb.from('movements').update({check_in:new Date().toISOString(),return_note:note||null}).eq('id',mv.id);
+    if(error)throw error;
+    const u=allUsers.find(x=>x.id===uid);
+    document.getElementById('in-note').value='';
+    showToast(`${u?u.name:'Staff'} checked in`,'s');
+    await refreshAll();populateSelects();
+  }catch(e){showToast('Error: '+e.message,'e')}
+  btn.disabled=false;btn.textContent='Record Check-In';
+}
+
+function populateDeptFilter(){
+  const depts=[...new Set(allUsers.map(u=>u.department).filter(Boolean))];
+  const sel=document.getElementById('f-dept');
+  const cur=sel.value;
+  sel.innerHTML='<option value="">All Departments</option>'+depts.map(d=>`<option value="${d}" ${d===cur?'selected':''}>${d}</option>`).join('');
+}
+
+function renderHistory(){
+  const search=document.getElementById('f-search').value.toLowerCase();
+  const dept=document.getElementById('f-dept').value;
+  const status=document.getElementById('f-status').value;
+  const date=document.getElementById('f-date').value;
+  let data=allMovements.filter(m=>{
+    if(search&&!(m.name||'').toLowerCase().includes(search)&&!(m.destination||'').toLowerCase().includes(search))return false;
+    if(dept&&m.department!==dept)return false;
+    if(status==='out'&&m.check_in)return false;
+    if(status==='returned'&&!m.check_in)return false;
+    if(date&&!(m.check_out||'').startsWith(date))return false;
+    return true;
+  });
+  const tbody=document.getElementById('tbl-hist');
+  if(!data.length){tbody.innerHTML='<tr class="empty-row"><td colspan="6">No records found</td></tr>';return}
+  tbody.innerHTML=data.map(m=>{
+    const od=isOverdue(m);
+    const st=m.check_in?'returned':od?'over':'out';
+    const pill=st==='returned'?'pill-in':st==='over'?'pill-over':'pill-out';
+    const label=st==='returned'?'Returned':st==='over'?'Overdue':'Out';
+    const c=colorFor(m.user_id);
+    const av=`<div class="avatar" style="background:${c}22;color:${c}">${initials(m.name)}</div>`;
+    return`<tr><td><div class="flex-center">${av}${m.name||'—'}</div></td><td>${m.department||'—'}</td><td>${m.destination||'—'}</td><td>${fmtDT(m.check_out)}</td><td>${fmtDT(m.check_in)}</td><td><span class="status-pill ${pill}">${label}</span></td></tr>`
+  }).join('');
+}
+
+async function renderAdmin(){
+  document.getElementById('user-list').innerHTML='<span class="spinner"></span> Loading...';
+  await refreshAll();
+  document.getElementById('user-list').innerHTML=allUsers.map(u=>`
+    <div class="user-row">
+      <div class="flex-center" style="gap:10px">
+        <div class="avatar" style="background:${colorFor(u.id)}22;color:${colorFor(u.id)}">${initials(u.name)}</div>
+        <div class="user-info">
+          <div class="un">${u.name}</div>
+          <div class="ud">${u.email} · ${u.department||'—'} · <span class="status-pill ${u.role==='admin'?'pill-in':'pill-out'}" style="padding:1px 7px;font-size:10px">${u.role}</span></div>
+        </div>
+      </div>
+      <div>${u.id!==currentUser.id?`<button class="btn-sm btn-danger" onclick="removeUser('${u.id}','${u.name}')">Remove</button>`:'<span style="font-size:11px;color:var(--text3)">You</span>'}</div>
+    </div>`).join('');
+}
+
+async function addUser(){
+  const name=document.getElementById('add-name').value.trim();
+  const email=document.getElementById('add-email').value.trim();
+  const pass=document.getElementById('add-pass').value;
+  const dept=document.getElementById('add-dept').value;
+  const role=document.getElementById('add-role').value;
+  if(!name||!email||!pass){showToast('Please fill all fields','e');return}
+  const btn=document.getElementById('btn-adduser');
+  btn.disabled=true;btn.textContent='Saving...';
+  try{
+    const {error}=await sb.from('users').insert({name,email,password:pass,role,department:dept});
+    if(error)throw error;
+    document.getElementById('add-name').value='';document.getElementById('add-email').value='';document.getElementById('add-pass').value='';
+    showToast(`${name} added`,'s');
+    await renderAdmin();
+  }catch(e){showToast('Error: '+(e.message.includes('unique')?'Email already exists':e.message),'e')}
+  btn.disabled=false;btn.textContent='Add User';
+}
+
+async function removeUser(id,name){
+  if(!confirm(`Remove ${name}?`))return;
+  try{
+    const {error}=await sb.from('users').delete().eq('id',id);
+    if(error)throw error;
+    showToast(`${name} removed`,'s');
+    await renderAdmin();
+  }catch(e){showToast('Error: '+e.message,'e')}
+}
+
+function exportCSV(){
+  const rows=[['Name','Department','Destination','Check-Out','Expected Return','Check-In','Notes'],...allMovements.map(m=>[m.name,m.department,m.destination,fmtDT(m.check_out),fmtDT(m.expected_return),fmtDT(m.check_in),m.note||''])];
+  const csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download='movement_log_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+  showToast('Movement log exported','s');
+}
+
+function exportUsers(){
+  const rows=[['Name','Email','Department','Role'],...allUsers.map(u=>[u.name,u.email,u.department,u.role])];
+  const csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download='staff_list_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+  showToast('User list exported','s');
+}
+
+function showToast(msg,type='s'){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast show toast-'+(type==='s'?'s':'e');
+  setTimeout(()=>t.className='toast',2800);
+}
+</script>
+</body>
+</html>
