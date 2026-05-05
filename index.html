@@ -16,112 +16,129 @@
   }
   body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--navy);color:var(--text);min-height:600px;overflow:hidden}
   #auth-screen{display:flex;align-items:center;justify-content:center;min-height:600px}
-  .auth-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2.5rem;width:360px;max-width:95vw}
+  .auth-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2.5rem;width:380px;max-width:95vw}
   .auth-logo{text-align:center;margin-bottom:1.8rem}
   .auth-logo .icon{width:52px;height:52px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:24px}
-  .auth-logo h1{font-size:1.3rem;font-weight:600;letter-spacing:-0.02em}
+  .auth-logo h1{font-size:1.3rem;font-weight:600}
   .auth-logo p{font-size:12px;color:var(--text2);margin-top:4px}
   .field{margin-bottom:1rem}
   .field label{display:block;font-size:12px;color:var(--text2);margin-bottom:6px;font-weight:500;letter-spacing:0.04em;text-transform:uppercase}
   .field input{width:100%;background:var(--navy);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:14px;outline:none;transition:border-color 0.2s}
   .field input:focus{border-color:var(--accent)}
   .btn-primary{width:100%;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:8px;padding:11px;color:#fff;font-size:14px;font-weight:600;cursor:pointer}
-  .btn-primary:hover{opacity:0.9}
   .btn-primary:disabled{opacity:0.5;cursor:not-allowed}
   .err-msg{color:var(--danger);font-size:12px;margin-top:8px;text-align:center}
   #app{display:none;height:600px;overflow:hidden}
-  .sidebar{width:200px;background:var(--card);border-right:1px solid var(--border);height:600px;display:flex;flex-direction:column;position:fixed;left:0;top:0;z-index:10}
-  .sidebar-logo{padding:18px 16px 14px;border-bottom:1px solid var(--border)}
-  .sidebar-logo .s-icon{width:30px;height:30px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-size:14px;vertical-align:middle;margin-right:8px}
+  .sidebar{width:210px;background:var(--card);border-right:1px solid var(--border);height:600px;display:flex;flex-direction:column;position:fixed;left:0;top:0;z-index:10}
+  .sidebar-logo{padding:16px 16px 12px;border-bottom:1px solid var(--border)}
+  .sidebar-logo .s-icon{width:28px;height:28px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:7px;display:inline-flex;align-items:center;justify-content:center;font-size:13px;vertical-align:middle;margin-right:7px}
   .sidebar-logo span{font-size:13px;font-weight:700;vertical-align:middle}
-  .nav{flex:1;padding:12px 8px}
-  .nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;cursor:pointer;font-size:13px;color:var(--text2);margin-bottom:2px;transition:all 0.15s}
+  .nav{flex:1;padding:10px 8px;overflow-y:auto}
+  .nav-section{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;font-weight:600;padding:8px 12px 4px}
+  .nav-item{display:flex;align-items:center;gap:9px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:12.5px;color:var(--text2);margin-bottom:1px;transition:all 0.15s}
   .nav-item:hover{background:var(--card2);color:var(--text)}
   .nav-item.active{background:rgba(0,201,167,0.12);color:var(--accent)}
-  .nav-item .ni{font-size:15px;width:18px;text-align:center}
-  .sidebar-user{padding:14px 16px;border-top:1px solid var(--border)}
+  .nav-item .ni{font-size:14px;width:16px;text-align:center}
+  .sidebar-user{padding:12px 14px;border-top:1px solid var(--border)}
   .sidebar-user .u-name{font-size:12px;font-weight:600}
   .sidebar-user .u-role{font-size:11px;color:var(--text2)}
-  .sidebar-user .u-badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:20px;margin-top:4px;font-weight:600}
+  .u-badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:20px;margin-top:3px;font-weight:600}
   .badge-admin{background:rgba(0,201,167,0.15);color:var(--accent)}
   .badge-staff{background:rgba(0,153,255,0.15);color:var(--accent2)}
-  .logout-btn{font-size:11px;color:var(--text3);cursor:pointer;margin-top:8px;display:block}
+  .badge-supervisor{background:rgba(239,159,39,0.15);color:var(--warn)}
+  .logout-btn{font-size:11px;color:var(--text3);cursor:pointer;margin-top:6px;display:block}
   .logout-btn:hover{color:var(--danger)}
-  .main{margin-left:200px;height:600px;overflow-y:auto;padding:20px 22px}
+  .main{margin-left:210px;height:600px;overflow-y:auto;padding:18px 20px}
   .page{display:none}
   .page.active{display:block}
-  .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
-  .topbar h2{font-size:1.1rem;font-weight:700;letter-spacing:-0.02em}
-  .topbar .sub{font-size:12px;color:var(--text2);margin-top:2px}
-  .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
-  .stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px}
-  .stat-card .sc-label{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:0.06em;font-weight:600}
-  .stat-card .sc-val{font-size:1.6rem;font-weight:700;margin:4px 0 2px;letter-spacing:-0.03em}
-  .stat-card .sc-sub{font-size:11px;color:var(--text2)}
-  .sc-out .sc-val{color:var(--accent2)}
-  .sc-over .sc-val{color:var(--danger)}
-  .sc-in .sc-val{color:var(--accent)}
-  .sc-total .sc-val{color:var(--text)}
-  .table-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
-  .table-header{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-  .table-header h3{font-size:13px;font-weight:600}
-  table{width:100%;border-collapse:collapse;font-size:12.5px}
-  th{background:var(--card2);padding:9px 14px;text-align:left;font-size:11px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:0.05em}
-  td{padding:10px 14px;border-top:1px solid var(--border);color:var(--text2)}
+  .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+  .topbar h2{font-size:1.05rem;font-weight:700;letter-spacing:-0.02em}
+  .topbar .sub{font-size:11px;color:var(--text2);margin-top:2px}
+  .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+  .stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px}
+  .sc-label{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.06em;font-weight:600}
+  .sc-val{font-size:1.5rem;font-weight:700;margin:3px 0 1px;letter-spacing:-0.03em}
+  .sc-sub{font-size:10px;color:var(--text2)}
+  .table-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:14px}
+  .table-header{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+  .table-header h3{font-size:12px;font-weight:600}
+  table{width:100%;border-collapse:collapse;font-size:12px}
+  th{background:var(--card2);padding:8px 12px;text-align:left;font-size:10px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:0.05em}
+  td{padding:9px 12px;border-top:1px solid var(--border);color:var(--text2)}
   td:first-child{color:var(--text);font-weight:500}
   tr:hover td{background:rgba(255,255,255,0.02)}
-  .status-pill{display:inline-block;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:600}
-  .pill-out{background:rgba(0,153,255,0.15);color:var(--accent2)}
-  .pill-in{background:rgba(99,153,34,0.2);color:#97c459}
-  .pill-over{background:rgba(226,75,74,0.15);color:var(--danger)}
-  .action-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
-  .action-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
-  .action-card h3{font-size:13px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:8px}
-  .action-card h3 .icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px}
-  .icon-out{background:rgba(0,153,255,0.15)}
-  .icon-in{background:rgba(0,201,167,0.15)}
-  .form-row{margin-bottom:10px}
-  .form-row label{display:block;font-size:11px;color:var(--text2);margin-bottom:5px;font-weight:500;text-transform:uppercase;letter-spacing:0.04em}
-  .form-row input,.form-row select,.form-row textarea{width:100%;background:var(--navy);border:1px solid var(--border);border-radius:7px;padding:8px 12px;color:var(--text);font-size:13px;outline:none}
-  .form-row input:focus,.form-row select:focus{border-color:var(--accent)}
+  .pill{display:inline-block;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:600}
+  .pill-pending{background:rgba(239,159,39,0.15);color:var(--warn)}
+  .pill-progress{background:rgba(0,153,255,0.15);color:var(--accent2)}
+  .pill-completed{background:rgba(0,201,167,0.15);color:var(--accent)}
+  .pill-evaluated{background:rgba(99,153,34,0.2);color:#97c459}
+  .pill-approved{background:rgba(0,201,167,0.25);color:var(--accent)}
+  .pill-rejected{background:rgba(226,75,74,0.15);color:var(--danger)}
+  .pill-high{background:rgba(226,75,74,0.15);color:var(--danger)}
+  .pill-medium{background:rgba(239,159,39,0.15);color:var(--warn)}
+  .pill-low{background:rgba(0,153,255,0.15);color:var(--accent2)}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .form-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px}
+  .form-card h3{font-size:12px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:7px}
+  .form-row{margin-bottom:9px}
+  .form-row label{display:block;font-size:10px;color:var(--text2);margin-bottom:4px;font-weight:500;text-transform:uppercase;letter-spacing:0.04em}
+  .form-row input,.form-row select,.form-row textarea{width:100%;background:var(--navy);border:1px solid var(--border);border-radius:6px;padding:7px 10px;color:var(--text);font-size:12px;outline:none;font-family:inherit}
+  .form-row input:focus,.form-row select:focus,.form-row textarea:focus{border-color:var(--accent)}
   .form-row select option{background:var(--navy)}
-  .btn-action{width:100%;padding:9px;border:none;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;margin-top:4px;transition:opacity 0.15s}
-  .btn-action:disabled{opacity:0.5;cursor:not-allowed}
-  .btn-out{background:rgba(0,153,255,0.25);color:var(--accent2)}
-  .btn-in{background:rgba(0,201,167,0.25);color:var(--accent)}
-  .btn-action:hover:not(:disabled){opacity:0.8}
-  .filters{display:flex;gap:10px;margin-bottom:14px;align-items:center;flex-wrap:wrap}
-  .filters input,.filters select{background:var(--card);border:1px solid var(--border);border-radius:7px;padding:7px 12px;color:var(--text);font-size:12px;outline:none}
-  .filters select option{background:var(--navy)}
-  .admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-  .admin-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px}
-  .admin-card h3{font-size:13px;font-weight:600;margin-bottom:14px}
-  .user-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)}
-  .user-row:last-child{border-bottom:none}
-  .user-info .un{font-size:13px;font-weight:500}
-  .user-info .ud{font-size:11px;color:var(--text2)}
-  .btn-sm{padding:4px 10px;border:1px solid var(--border);border-radius:5px;font-size:11px;cursor:pointer;background:transparent;color:var(--text2)}
+  .form-row textarea{resize:vertical;min-height:60px}
+  .btn-action{width:100%;padding:8px;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;transition:opacity 0.15s}
+  .btn-action:disabled{opacity:0.4;cursor:not-allowed}
+  .btn-accent{background:rgba(0,201,167,0.2);color:var(--accent)}
+  .btn-blue{background:rgba(0,153,255,0.2);color:var(--accent2)}
+  .btn-warn{background:rgba(239,159,39,0.2);color:var(--warn)}
+  .btn-danger{background:rgba(226,75,74,0.15);color:var(--danger)}
+  .btn-action:hover:not(:disabled){opacity:0.75}
+  .btn-sm{padding:3px 9px;border:1px solid var(--border);border-radius:5px;font-size:10px;cursor:pointer;background:transparent;color:var(--text2)}
   .btn-sm:hover{background:var(--card2);color:var(--text)}
-  .btn-danger{border-color:rgba(226,75,74,0.4);color:var(--danger)}
-  .btn-danger:hover{background:rgba(226,75,74,0.1)}
-  .export-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:rgba(0,201,167,0.15);color:var(--accent);border:1px solid rgba(0,201,167,0.3);border-radius:7px;font-size:12px;font-weight:600;cursor:pointer}
-  .export-btn:hover{background:rgba(0,201,167,0.25)}
-  .toast{position:fixed;bottom:20px;right:20px;background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px 18px;font-size:13px;z-index:999;transform:translateY(80px);transition:transform 0.3s;pointer-events:none}
+  .btn-sm-accent{border-color:rgba(0,201,167,0.4);color:var(--accent)}
+  .btn-sm-warn{border-color:rgba(239,159,39,0.4);color:var(--warn)}
+  .btn-sm-danger{border-color:rgba(226,75,74,0.4);color:var(--danger)}
+  .export-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;background:rgba(0,201,167,0.12);color:var(--accent);border:1px solid rgba(0,201,167,0.3);border-radius:6px;font-size:11px;font-weight:600;cursor:pointer}
+  .export-btn:hover{background:rgba(0,201,167,0.22)}
+  .filters{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+  .filters input,.filters select{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:6px 10px;color:var(--text);font-size:11px;outline:none}
+  .filters select option{background:var(--navy)}
+  .toast{position:fixed;bottom:16px;right:16px;background:var(--card2);border:1px solid var(--border);border-radius:9px;padding:10px 16px;font-size:12px;z-index:999;transform:translateY(80px);transition:transform 0.3s;pointer-events:none}
   .toast.show{transform:translateY(0)}
   .toast-s{border-left:3px solid var(--accent)}
   .toast-e{border-left:3px solid var(--danger)}
-  ::-webkit-scrollbar{width:5px}
-  ::-webkit-scrollbar-track{background:transparent}
-  ::-webkit-scrollbar-thumb{background:var(--border);border-radius:5px}
-  .empty-row td{text-align:center;padding:24px;color:var(--text3)}
-  .avatar{width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin-right:8px;vertical-align:middle;flex-shrink:0}
-  .flex-center{display:flex;align-items:center}
-  .loading-row td{text-align:center;padding:24px;color:var(--text3)}
-  .spinner{display:inline-block;width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:6px}
+  ::-webkit-scrollbar{width:4px}
+  ::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+  .empty-row td{text-align:center;padding:20px;color:var(--text3);font-size:12px}
+  .spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:5px}
   @keyframes spin{to{transform:rotate(360deg)}}
-  .db-status{font-size:10px;padding:2px 8px;border-radius:20px;margin-left:8px;font-weight:600}
-  .db-live{background:rgba(0,201,167,0.15);color:var(--accent)}
-  .db-err{background:rgba(226,75,74,0.15);color:var(--danger)}
+  .avatar{width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;margin-right:6px;vertical-align:middle;flex-shrink:0}
+  .flex-c{display:flex;align-items:center}
+  .stars{color:var(--warn);font-size:13px;letter-spacing:1px}
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:100;align-items:center;justify-content:center}
+  .modal-overlay.open{display:flex}
+  .modal{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;width:480px;max-width:95vw;max-height:80vh;overflow-y:auto}
+  .modal h3{font-size:14px;font-weight:600;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
+  .modal-close{cursor:pointer;color:var(--text3);font-size:18px;line-height:1}
+  .modal-close:hover{color:var(--danger)}
+  .info-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px}
+  .info-row:last-child{border-bottom:none}
+  .info-label{color:var(--text2)}
+  .info-val{color:var(--text);font-weight:500;text-align:right;max-width:60%}
+  .rating-stars{display:flex;gap:4px;margin:4px 0}
+  .rating-star{font-size:20px;cursor:pointer;transition:transform 0.1s;color:var(--text3)}
+  .rating-star.active{color:var(--warn)}
+  .rating-star:hover{transform:scale(1.2)}
+  .workflow-steps{display:flex;align-items:center;gap:0;margin:12px 0}
+  .w-step{flex:1;text-align:center;font-size:10px;color:var(--text3);position:relative}
+  .w-step.done{color:var(--accent)}
+  .w-step.active{color:var(--accent2)}
+  .w-dot{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);margin:0 auto 4px;display:flex;align-items:center;justify-content:center;font-size:10px;background:var(--navy)}
+  .w-step.done .w-dot{background:var(--accent);border-color:var(--accent);color:#fff}
+  .w-step.active .w-dot{border-color:var(--accent2);color:var(--accent2)}
+  .w-line{height:2px;background:var(--border);flex:1;margin-top:-14px}
+  .w-line.done{background:var(--accent)}
+  .db-live{display:inline-block;font-size:10px;padding:2px 7px;border-radius:20px;background:rgba(0,201,167,0.15);color:var(--accent);margin-left:6px;font-weight:600}
 </style>
 </head>
 <body>
@@ -131,267 +148,377 @@
     <div class="auth-logo">
       <div class="icon">🏢</div>
       <h1>StaffTrack</h1>
-      <p>Movement Register — Live Database</p>
+      <p>Movement & Performance Register</p>
     </div>
-    <div class="field">
-      <label>Email Address</label>
-      <input type="email" id="login-email" placeholder="you@company.com">
-    </div>
-    <div class="field">
-      <label>Password</label>
-      <input type="password" id="login-pass" placeholder="••••••••">
-    </div>
+    <div class="field"><label>Email</label><input type="email" id="login-email" placeholder="you@company.com"></div>
+    <div class="field"><label>Password</label><input type="password" id="login-pass" placeholder="••••••••"></div>
     <button class="btn-primary" id="login-btn" onclick="doLogin()">Sign In</button>
     <div class="err-msg" id="login-err"></div>
-    <div style="margin-top:16px;padding:12px;background:var(--navy);border-radius:8px;font-size:11px;color:var(--text2)">
-      First time? Run the SQL setup in Supabase, then log in with <strong style="color:var(--text)">admin@company.com / admin123</strong>
-    </div>
   </div>
 </div>
 
 <div id="app">
   <div class="sidebar">
-    <div class="sidebar-logo">
-      <span class="s-icon">🏢</span>
-      <span>StaffTrack</span>
-    </div>
+    <div class="sidebar-logo"><span class="s-icon">🏢</span><span>StaffTrack</span></div>
     <nav class="nav">
-      <div class="nav-item active" onclick="showPage('dashboard',this)"><span class="ni">📊</span> Dashboard</div>
-      <div class="nav-item" onclick="showPage('movement',this)"><span class="ni">🚶</span> Movement</div>
-      <div class="nav-item" onclick="showPage('history',this)"><span class="ni">📋</span> History</div>
-      <div class="nav-item" id="nav-admin" onclick="showPage('admin',this)"><span class="ni">⚙️</span> Admin Panel</div>
+      <div class="nav-section">Movement</div>
+      <div class="nav-item active" onclick="showPage('dashboard',this)"><span class="ni">📊</span>Dashboard</div>
+      <div class="nav-item" onclick="showPage('movement',this)"><span class="ni">🚶</span>Movement</div>
+      <div class="nav-item" onclick="showPage('history',this)"><span class="ni">📋</span>History</div>
+      <div class="nav-section">Performance</div>
+      <div class="nav-item" onclick="showPage('tasks',this)"><span class="ni">📌</span>My Tasks</div>
+      <div class="nav-item" id="nav-assign" onclick="showPage('assign',this)"><span class="ni">➕</span>Assign Task</div>
+      <div class="nav-item" id="nav-evaluate" onclick="showPage('evaluate',this)"><span class="ni">⭐</span>Evaluate</div>
+      <div class="nav-item" id="nav-approvals" onclick="showPage('approvals',this)"><span class="ni">✅</span>Approvals <span id="approval-badge" style="display:none;background:var(--danger);color:#fff;border-radius:20px;font-size:9px;padding:1px 5px;margin-left:4px">0</span></div>
+      <div class="nav-item" id="nav-perf-report" onclick="showPage('perfreport',this)"><span class="ni">📈</span>Reports</div>
+      <div class="nav-section admin-only">Admin</div>
+      <div class="nav-item admin-only" id="nav-admin" onclick="showPage('admin',this)"><span class="ni">⚙️</span>Admin Panel</div>
     </nav>
     <div class="sidebar-user">
       <div class="u-name" id="sb-name">—</div>
       <div class="u-role" id="sb-dept">—</div>
-      <span class="u-badge" id="sb-badge">—</span><span class="db-status db-live" id="db-status">● Live</span>
+      <span class="u-badge" id="sb-badge">—</span><span class="db-live">● Live</span>
       <span class="logout-btn" onclick="doLogout()">Sign out</span>
     </div>
   </div>
 
   <div class="main">
+    <!-- DASHBOARD -->
     <div class="page active" id="page-dashboard">
-      <div class="topbar">
-        <div><h2>Dashboard</h2><div class="sub" id="dash-time">—</div></div>
-        <button class="export-btn" onclick="refreshAll()">↻ Refresh</button>
-      </div>
+      <div class="topbar"><div><h2>Dashboard</h2><div class="sub" id="dash-time">—</div></div><button class="export-btn" onclick="refreshAll()">↻ Refresh</button></div>
       <div class="stats-grid">
-        <div class="stat-card sc-out"><div class="sc-label">Currently Out</div><div class="sc-val" id="stat-out">—</div><div class="sc-sub">staff members</div></div>
-        <div class="stat-card sc-over"><div class="sc-label">Overdue Returns</div><div class="sc-val" id="stat-over">—</div><div class="sc-sub">past expected time</div></div>
-        <div class="stat-card sc-in"><div class="sc-label">Checked In</div><div class="sc-val" id="stat-in">—</div><div class="sc-sub">currently present</div></div>
-        <div class="stat-card sc-total"><div class="sc-label">Total Staff</div><div class="sc-val" id="stat-total">—</div><div class="sc-sub">registered</div></div>
+        <div class="stat-card"><div class="sc-label">Currently Out</div><div class="sc-val" style="color:var(--accent2)" id="stat-out">—</div><div class="sc-sub">staff out</div></div>
+        <div class="stat-card"><div class="sc-label">Overdue</div><div class="sc-val" style="color:var(--danger)" id="stat-over">—</div><div class="sc-sub">past return time</div></div>
+        <div class="stat-card"><div class="sc-label">Active Tasks</div><div class="sc-val" style="color:var(--warn)" id="stat-tasks">—</div><div class="sc-sub">in progress</div></div>
+        <div class="stat-card"><div class="sc-label">Pending Approval</div><div class="sc-val" style="color:var(--accent)" id="stat-approvals">—</div><div class="sc-sub">awaiting sign-off</div></div>
+      </div>
+      <div class="table-wrap" style="margin-bottom:14px">
+        <div class="table-header"><h3>Currently Out</h3></div>
+        <table><thead><tr><th>Staff</th><th>Dept</th><th>Destination</th><th>Checked Out</th><th>Expected</th><th>Status</th></tr></thead>
+        <tbody id="tbl-out"><tr class="empty-row"><td colspan="6"><span class="spinner"></span>Loading...</td></tr></tbody></table>
       </div>
       <div class="table-wrap">
-        <div class="table-header"><h3>Currently Out</h3></div>
-        <table><thead><tr><th>Staff Member</th><th>Department</th><th>Destination</th><th>Checked Out</th><th>Expected Return</th><th>Status</th></tr></thead>
-        <tbody id="tbl-out"><tr class="loading-row"><td colspan="6"><span class="spinner"></span>Loading...</td></tr></tbody></table>
+        <div class="table-header"><h3>Recent Task Activity</h3></div>
+        <table><thead><tr><th>Task</th><th>Assigned To</th><th>Priority</th><th>Status</th><th>Due</th></tr></thead>
+        <tbody id="tbl-recent-tasks"><tr class="empty-row"><td colspan="5"><span class="spinner"></span>Loading...</td></tr></tbody></table>
       </div>
     </div>
 
+    <!-- MOVEMENT -->
     <div class="page" id="page-movement">
       <div class="topbar"><div><h2>Record Movement</h2><div class="sub">Check staff in or out</div></div></div>
-      <div class="action-grid">
-        <div class="action-card">
-          <h3><span class="icon icon-out">🚪</span> Check-Out (Exit)</h3>
+      <div class="form-grid">
+        <div class="form-card">
+          <h3>🚪 Check-Out</h3>
           <div class="form-row"><label>Staff Member</label><select id="out-staff"></select></div>
-          <div class="form-row"><label>Destination</label><input type="text" id="out-dest" placeholder="e.g. Client Meeting, Field Visit"></div>
+          <div class="form-row"><label>Destination</label><input type="text" id="out-dest" placeholder="e.g. Client Meeting"></div>
           <div class="form-row"><label>Expected Return</label><input type="datetime-local" id="out-return"></div>
-          <div class="form-row"><label>Notes</label><input type="text" id="out-note" placeholder="Optional notes"></div>
-          <button class="btn-action btn-out" id="btn-checkout" onclick="checkOut()">Record Check-Out</button>
+          <div class="form-row"><label>Notes</label><input type="text" id="out-note" placeholder="Optional"></div>
+          <button class="btn-action btn-blue" id="btn-checkout" onclick="checkOut()">Record Check-Out</button>
         </div>
-        <div class="action-card">
-          <h3><span class="icon icon-in">✅</span> Check-In (Return)</h3>
-          <div class="form-row"><label>Staff Member (Currently Out)</label><select id="in-staff"></select></div>
-          <div class="form-row"><label>Return Notes</label><input type="text" id="in-note" placeholder="Optional return notes"></div>
-          <button class="btn-action btn-in" id="btn-checkin" onclick="checkIn()" style="margin-top:80px">Record Check-In</button>
+        <div class="form-card">
+          <h3>✅ Check-In</h3>
+          <div class="form-row"><label>Staff (Currently Out)</label><select id="in-staff"></select></div>
+          <div class="form-row"><label>Return Notes</label><input type="text" id="in-note" placeholder="Optional"></div>
+          <button class="btn-action btn-accent" id="btn-checkin" onclick="checkIn()" style="margin-top:60px">Record Check-In</button>
         </div>
       </div>
     </div>
 
+    <!-- HISTORY -->
     <div class="page" id="page-history">
-      <div class="topbar"><div><h2>Movement History</h2><div class="sub">Full audit log from database</div></div>
-        <button class="export-btn" onclick="exportCSV()">⬇ Export CSV</button>
-      </div>
+      <div class="topbar"><div><h2>Movement History</h2></div><button class="export-btn" onclick="exportMvCSV()">⬇ Export CSV</button></div>
       <div class="filters">
-        <input type="text" id="f-search" placeholder="Search name or destination..." oninput="renderHistory()" style="flex:1;min-width:140px">
-        <select id="f-dept" onchange="renderHistory()"><option value="">All Departments</option></select>
-        <select id="f-status" onchange="renderHistory()">
-          <option value="">All Status</option><option value="out">Out</option><option value="returned">Returned</option>
-        </select>
+        <input type="text" id="f-search" placeholder="Search..." oninput="renderHistory()" style="flex:1">
+        <select id="f-dept" onchange="renderHistory()"><option value="">All Depts</option></select>
+        <select id="f-status" onchange="renderHistory()"><option value="">All Status</option><option value="out">Out</option><option value="returned">Returned</option></select>
         <input type="date" id="f-date" onchange="renderHistory()">
       </div>
       <div class="table-wrap">
         <table><thead><tr><th>Staff</th><th>Dept</th><th>Destination</th><th>Check-Out</th><th>Check-In</th><th>Status</th></tr></thead>
-        <tbody id="tbl-hist"><tr class="loading-row"><td colspan="6"><span class="spinner"></span>Loading...</td></tr></tbody></table>
+        <tbody id="tbl-hist"></tbody></table>
       </div>
     </div>
 
-    <div class="page" id="page-admin">
-      <div class="topbar"><div><h2>Admin Panel</h2><div class="sub">Manage users & reports</div></div></div>
-      <div class="admin-grid">
-        <div class="admin-card">
-          <h3>Staff Members</h3>
-          <div id="user-list"><span class="spinner"></span> Loading...</div>
+    <!-- MY TASKS -->
+    <div class="page" id="page-tasks">
+      <div class="topbar"><div><h2>My Tasks</h2><div class="sub">Tasks assigned to you</div></div></div>
+      <div class="table-wrap">
+        <table><thead><tr><th>Task</th><th>Assigned By</th><th>Priority</th><th>Due Date</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody id="tbl-my-tasks"></tbody></table>
+      </div>
+    </div>
+
+    <!-- ASSIGN TASK -->
+    <div class="page" id="page-assign">
+      <div class="topbar"><div><h2>Assign Task</h2><div class="sub">Create and assign a task to staff</div></div></div>
+      <div class="form-grid">
+        <div class="form-card" style="grid-column:1/-1">
+          <h3>📌 New Task</h3>
+          <div class="form-grid">
+            <div>
+              <div class="form-row"><label>Task Title</label><input type="text" id="task-title" placeholder="Task name"></div>
+              <div class="form-row"><label>Assign To</label><select id="task-assignee"></select></div>
+              <div class="form-row"><label>Supervisor</label><select id="task-supervisor"></select></div>
+              <div class="form-row"><label>Priority</label>
+                <select id="task-priority"><option value="Low">Low</option><option value="Medium" selected>Medium</option><option value="High">High</option></select>
+              </div>
+            </div>
+            <div>
+              <div class="form-row"><label>Description</label><textarea id="task-desc" placeholder="Task details and objectives..." style="min-height:80px"></textarea></div>
+              <div class="form-row"><label>Due Date</label><input type="date" id="task-due"></div>
+              <div class="form-row"><label>KPI / Success Criteria</label><input type="text" id="task-kpi" placeholder="e.g. Report submitted, 95% accuracy"></div>
+            </div>
+          </div>
+          <button class="btn-action btn-accent" id="btn-assign" onclick="assignTask()" style="max-width:200px;margin-top:8px">Assign Task</button>
         </div>
-        <div class="admin-card">
-          <h3>Add New User</h3>
-          <div class="form-row"><label>Full Name</label><input type="text" id="add-name" placeholder="Full name"></div>
-          <div class="form-row"><label>Email</label><input type="email" id="add-email" placeholder="email@company.com"></div>
-          <div class="form-row"><label>Password</label><input type="password" id="add-pass" placeholder="Password"></div>
+      </div>
+      <div class="table-wrap" style="margin-top:14px">
+        <div class="table-header"><h3>All Assigned Tasks</h3><button class="export-btn" onclick="exportTasksCSV()">⬇ Export</button></div>
+        <table><thead><tr><th>Task</th><th>Assigned To</th><th>Supervisor</th><th>Priority</th><th>Due</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody id="tbl-all-tasks"></tbody></table>
+      </div>
+    </div>
+
+    <!-- EVALUATE -->
+    <div class="page" id="page-evaluate">
+      <div class="topbar"><div><h2>Evaluate Performance</h2><div class="sub">Rate completed tasks</div></div></div>
+      <div class="table-wrap">
+        <div class="table-header"><h3>Tasks Awaiting Evaluation</h3></div>
+        <table><thead><tr><th>Task</th><th>Staff</th><th>Completed On</th><th>KPI</th><th>Completion Notes</th><th>Action</th></tr></thead>
+        <tbody id="tbl-evaluate"></tbody></table>
+      </div>
+    </div>
+
+    <!-- APPROVALS -->
+    <div class="page" id="page-approvals">
+      <div class="topbar"><div><h2>Sign-Off Approvals</h2><div class="sub">Approve or reject evaluated tasks</div></div></div>
+      <div class="table-wrap">
+        <div class="table-header"><h3>Pending Approvals</h3></div>
+        <table><thead><tr><th>Task</th><th>Staff</th><th>Rating</th><th>Outcome</th><th>Supervisor Comment</th><th>Action</th></tr></thead>
+        <tbody id="tbl-approvals"></tbody></table>
+      </div>
+      <div class="table-wrap" style="margin-top:14px">
+        <div class="table-header"><h3>Completed Sign-Offs</h3></div>
+        <table><thead><tr><th>Task</th><th>Staff</th><th>Rating</th><th>Outcome</th><th>Approved By</th><th>Date</th><th>Status</th></tr></thead>
+        <tbody id="tbl-signoffs"></tbody></table>
+      </div>
+    </div>
+
+    <!-- PERFORMANCE REPORT -->
+    <div class="page" id="page-perfreport">
+      <div class="topbar"><div><h2>Performance Reports</h2><div class="sub">Audit trail & analytics</div></div><button class="export-btn" onclick="exportPerfCSV()">⬇ Export CSV</button></div>
+      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat-card"><div class="sc-label">Total Tasks</div><div class="sc-val" style="color:var(--text)" id="rpt-total">—</div></div>
+        <div class="stat-card"><div class="sc-label">Avg Rating</div><div class="sc-val" style="color:var(--warn)" id="rpt-avg">—</div></div>
+        <div class="stat-card"><div class="sc-label">Approved</div><div class="sc-val" style="color:var(--accent)" id="rpt-approved">—</div></div>
+      </div>
+      <div class="filters" style="margin-top:12px">
+        <select id="rpt-staff" onchange="renderPerfReport()"><option value="">All Staff</option></select>
+        <select id="rpt-outcome" onchange="renderPerfReport()"><option value="">All Outcomes</option><option>Excellent</option><option>Satisfactory</option><option>Needs Improvement</option></select>
+      </div>
+      <div class="table-wrap">
+        <table><thead><tr><th>Task</th><th>Staff</th><th>Supervisor</th><th>Rating</th><th>Outcome</th><th>Approved By</th><th>Sign-off Date</th><th>Audit</th></tr></thead>
+        <tbody id="tbl-perf-report"></tbody></table>
+      </div>
+    </div>
+
+    <!-- ADMIN -->
+    <div class="page" id="page-admin">
+      <div class="topbar"><div><h2>Admin Panel</h2></div></div>
+      <div class="form-grid">
+        <div class="form-card">
+          <h3>👥 Staff Members</h3>
+          <div id="user-list"><span class="spinner"></span></div>
+        </div>
+        <div class="form-card">
+          <h3>➕ Add User</h3>
+          <div class="form-row"><label>Name</label><input type="text" id="add-name"></div>
+          <div class="form-row"><label>Email</label><input type="email" id="add-email"></div>
+          <div class="form-row"><label>Password</label><input type="password" id="add-pass"></div>
           <div class="form-row"><label>Department</label>
             <select id="add-dept"><option>IT</option><option>HR</option><option>Finance</option><option>Operations</option><option>Sales</option><option>Management</option></select>
           </div>
           <div class="form-row"><label>Role</label>
-            <select id="add-role"><option value="staff">Staff</option><option value="admin">Admin</option></select>
+            <select id="add-role"><option value="staff">Staff</option><option value="supervisor">Supervisor</option><option value="admin">Admin</option></select>
           </div>
-          <button class="btn-action btn-in" id="btn-adduser" onclick="addUser()">Add User</button>
-          <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
-            <h3 style="margin-bottom:10px">Export Reports</h3>
-            <button class="export-btn" onclick="exportCSV()" style="margin-bottom:8px;width:100%;justify-content:center">⬇ Export Movement Log (CSV)</button>
-            <button class="export-btn" onclick="exportUsers()" style="width:100%;justify-content:center">⬇ Export User List (CSV)</button>
+          <button class="btn-action btn-accent" id="btn-adduser" onclick="addUser()">Add User</button>
+          <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
+            <button class="export-btn" onclick="exportMvCSV()" style="width:100%;justify-content:center;margin-bottom:7px">⬇ Movement Log CSV</button>
+            <button class="export-btn" onclick="exportUsers()" style="width:100%;justify-content:center;margin-bottom:7px">⬇ User List CSV</button>
+            <button class="export-btn" onclick="exportPerfCSV()" style="width:100%;justify-content:center">⬇ Performance Report CSV</button>
           </div>
         </div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- EVALUATE MODAL -->
+<div class="modal-overlay" id="modal-eval">
+  <div class="modal">
+    <h3>⭐ Evaluate Task <span class="modal-close" onclick="closeModal('modal-eval')">×</span></h3>
+    <input type="hidden" id="eval-task-id">
+    <div id="eval-task-info"></div>
+    <div class="form-row" style="margin-top:12px"><label>Performance Rating</label>
+      <div class="rating-stars" id="rating-stars">
+        <span class="rating-star" onclick="setRating(1)">★</span>
+        <span class="rating-star" onclick="setRating(2)">★</span>
+        <span class="rating-star" onclick="setRating(3)">★</span>
+        <span class="rating-star" onclick="setRating(4)">★</span>
+        <span class="rating-star" onclick="setRating(5)">★</span>
+      </div>
+      <input type="hidden" id="eval-rating" value="0">
+    </div>
+    <div class="form-row"><label>Outcome</label>
+      <select id="eval-outcome"><option>Excellent</option><option>Satisfactory</option><option>Needs Improvement</option></select>
+    </div>
+    <div class="form-row"><label>Supervisor Comments</label><textarea id="eval-comments" placeholder="Detailed feedback..."></textarea></div>
+    <button class="btn-action btn-accent" id="btn-submit-eval" onclick="submitEvaluation()">Submit Evaluation → Send for Approval</button>
+  </div>
+</div>
+
+<!-- TASK UPDATE MODAL -->
+<div class="modal-overlay" id="modal-update">
+  <div class="modal">
+    <h3>📝 Update Task Progress <span class="modal-close" onclick="closeModal('modal-update')">×</span></h3>
+    <input type="hidden" id="update-task-id">
+    <div id="update-task-info"></div>
+    <div class="form-row" style="margin-top:12px"><label>Status</label>
+      <select id="update-status">
+        <option value="In Progress">In Progress</option>
+        <option value="Completed">Completed</option>
+      </select>
+    </div>
+    <div class="form-row"><label>Completion Notes</label><textarea id="update-notes" placeholder="Describe what was done..."></textarea></div>
+    <button class="btn-action btn-accent" id="btn-submit-update" onclick="submitTaskUpdate()">Update Task</button>
+  </div>
+</div>
+
+<!-- TASK DETAIL MODAL -->
+<div class="modal-overlay" id="modal-detail">
+  <div class="modal">
+    <h3>📌 Task Detail <span class="modal-close" onclick="closeModal('modal-detail')">×</span></h3>
+    <div id="detail-content"></div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-const SUPA_URL = 'https://uxxlmmlnagqriklkdosk.supabase.co';
-const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV4eGxtbWxuYWdxcmlrbGtkb3NrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4NDYxNzcsImV4cCI6MjA5MzQyMjE3N30._p9fYjZMrXm6YEPzwMBCC5FLFXaeuFcA12gVVM_duS0';
+const SUPA_URL='https://uxxlmmlnagqriklkdosk.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV4eGxtbWxuYWdxcmlrbGtkb3NrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4NDYxNzcsImV4cCI6MjA5MzQyMjE3N30._p9fYjZMrXm6YEPzwMBCC5FLFXaeuFcA12gVVM_duS0';
+const sb=supabase.createClient(SUPA_URL,SUPA_KEY);
 
-const sb = supabase.createClient(SUPA_URL, SUPA_KEY);
-
-let currentUser = null;
-let allUsers = [];
-let allMovements = [];
-
-const COLORS = ['#00c9a7','#0099ff','#ef9f27','#d4537e','#5dcaa5','#e24b4a','#97c459','#7f77dd'];
-
-function initials(name){return (name||'').split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase()}
-function colorFor(id){const idx=parseInt(String(id).replace(/\D/g,'').slice(-3))%COLORS.length;return COLORS[isNaN(idx)?0:idx]}
-
-function fmtDT(iso){
-  if(!iso)return '—';
-  const d=new Date(iso);
-  return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})+' '+d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
-}
-
-function isOverdue(m){return !m.check_in && m.expected_return && new Date(m.expected_return)<new Date()}
+let CU=null,allUsers=[],allMovements=[],allTasks=[];
+const COLORS=['#00c9a7','#0099ff','#ef9f27','#d4537e','#5dcaa5','#e24b4a','#97c459','#7f77dd'];
+const initials=n=>(n||'').split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+const colorFor=id=>{const i=parseInt(String(id).replace(/\D/g,'').slice(-3))%COLORS.length;return COLORS[isNaN(i)?0:i]};
+const fmtDT=iso=>{if(!iso)return'—';const d=new Date(iso);return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})+' '+d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})};
+const fmtD=iso=>{if(!iso)return'—';return new Date(iso).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})};
+const isOverdue=m=>!m.check_in&&m.expected_return&&new Date(m.expected_return)<new Date();
+const stars=n=>'★'.repeat(n)+'☆'.repeat(5-n);
 
 async function doLogin(){
   const email=document.getElementById('login-email').value.trim();
   const pass=document.getElementById('login-pass').value;
   const btn=document.getElementById('login-btn');
-  if(!email||!pass){document.getElementById('login-err').textContent='Please enter email and password';return}
+  if(!email||!pass){document.getElementById('login-err').textContent='Enter email and password';return}
   btn.disabled=true;btn.textContent='Signing in...';
   try{
-    const {data,error}=await sb.from('users').select('*').eq('email',email).eq('password',pass).single();
-    if(error||!data){document.getElementById('login-err').textContent='Invalid email or password';btn.disabled=false;btn.textContent='Sign In';return}
-    currentUser=data;
+    const{data,error}=await sb.from('users').select('*').eq('email',email).eq('password',pass).single();
+    if(error||!data){document.getElementById('login-err').textContent='Invalid credentials';btn.disabled=false;btn.textContent='Sign In';return}
+    CU=data;
     document.getElementById('auth-screen').style.display='none';
     document.getElementById('app').style.display='block';
     document.getElementById('sb-name').textContent=data.name;
     document.getElementById('sb-dept').textContent=data.department||'';
     const b=document.getElementById('sb-badge');
-    b.textContent=data.role==='admin'?'Admin':'Staff';
-    b.className='u-badge '+(data.role==='admin'?'badge-admin':'badge-staff');
-    document.getElementById('nav-admin').style.display=data.role==='admin'?'flex':'none';
+    b.textContent=data.role==='admin'?'Admin':data.role==='supervisor'?'Supervisor':'Staff';
+    b.className='u-badge '+(data.role==='admin'?'badge-admin':data.role==='supervisor'?'badge-supervisor':'badge-staff');
+    const isAdmin=data.role==='admin';
+    const isSupervisor=data.role==='supervisor'||isAdmin;
+    document.querySelectorAll('.admin-only').forEach(el=>el.style.display=isAdmin?'':'none');
+    document.getElementById('nav-assign').style.display=isSupervisor?'flex':'none';
+    document.getElementById('nav-evaluate').style.display=isSupervisor?'flex':'none';
+    document.getElementById('nav-approvals').style.display=isSupervisor?'flex':'none';
+    document.getElementById('nav-perf-report').style.display=isSupervisor?'flex':'none';
     updateClock();setInterval(updateClock,60000);
     await refreshAll();
-  }catch(e){document.getElementById('login-err').textContent='Connection error: '+e.message;btn.disabled=false;btn.textContent='Sign In'}
+  }catch(e){document.getElementById('login-err').textContent='Error: '+e.message;btn.disabled=false;btn.textContent='Sign In'}
 }
 
-function doLogout(){
-  currentUser=null;allUsers=[];allMovements=[];
-  document.getElementById('app').style.display='none';
-  document.getElementById('auth-screen').style.display='flex';
-  document.getElementById('login-err').textContent='';
-  document.getElementById('login-btn').disabled=false;
-  document.getElementById('login-btn').textContent='Sign In';
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('page-dashboard').classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  document.querySelector('.nav-item').classList.add('active');
-}
+function doLogout(){CU=null;allUsers=[];allMovements=[];allTasks=[];document.getElementById('app').style.display='none';document.getElementById('auth-screen').style.display='flex';document.getElementById('login-btn').disabled=false;document.getElementById('login-btn').textContent='Sign In';document.getElementById('login-err').textContent='';showPage('dashboard',document.querySelector('.nav-item'))}
 
-function updateClock(){
-  document.getElementById('dash-time').textContent=new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+' • '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
-}
+function updateClock(){document.getElementById('dash-time').textContent=new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+' • '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}
 
 async function refreshAll(){
   try{
-    const [{data:u},{data:m}]=await Promise.all([
+    const[{data:u},{data:m},{data:t}]=await Promise.all([
       sb.from('users').select('*').order('name'),
-      sb.from('movements').select('*').order('check_out',{ascending:false})
+      sb.from('movements').select('*').order('check_out',{ascending:false}),
+      sb.from('tasks').select('*').order('created_at',{ascending:false})
     ]);
-    allUsers=u||[];allMovements=m||[];
-    document.getElementById('db-status').textContent='● Live';
-    document.getElementById('db-status').className='db-status db-live';
-    renderDashboard();
-  }catch(e){
-    document.getElementById('db-status').textContent='● Offline';
-    document.getElementById('db-status').className='db-status db-err';
-    showToast('DB error: '+e.message,'e');
-  }
+    allUsers=u||[];allMovements=m||[];allTasks=t||[];
+    renderDashboard();updateApprovalBadge();
+  }catch(e){showToast('DB error: '+e.message,'e')}
 }
 
 function renderDashboard(){
   const out=allMovements.filter(m=>!m.check_in);
   const over=out.filter(m=>isOverdue(m));
-  const outUserIds=new Set(out.map(m=>m.user_id));
+  const active=allTasks.filter(t=>['Assigned','In Progress'].includes(t.status));
+  const pend=allTasks.filter(t=>t.status==='Evaluated');
   document.getElementById('stat-out').textContent=out.length;
   document.getElementById('stat-over').textContent=over.length;
-  document.getElementById('stat-in').textContent=Math.max(0,allUsers.length-outUserIds.size);
-  document.getElementById('stat-total').textContent=allUsers.length;
+  document.getElementById('stat-tasks').textContent=active.length;
+  document.getElementById('stat-approvals').textContent=pend.length;
   const tbody=document.getElementById('tbl-out');
-  if(!out.length){tbody.innerHTML='<tr class="empty-row"><td colspan="6">No staff currently out</td></tr>';return}
-  tbody.innerHTML=out.map(m=>{
-    const od=isOverdue(m);
-    const c=colorFor(m.user_id);
-    const av=`<div class="avatar" style="background:${c}22;color:${c}">${initials(m.name)}</div>`;
-    return`<tr><td><div class="flex-center">${av}${m.name}</div></td><td>${m.department||'—'}</td><td>${m.destination||'—'}</td><td>${fmtDT(m.check_out)}</td><td>${fmtDT(m.expected_return)}</td><td><span class="status-pill ${od?'pill-over':'pill-out'}">${od?'Overdue':'Out'}</span></td></tr>`
-  }).join('');
+  tbody.innerHTML=out.length?out.slice(0,5).map(m=>{const od=isOverdue(m);const c=colorFor(m.user_id);return`<tr><td><div class="flex-c"><div class="avatar" style="background:${c}22;color:${c}">${initials(m.name)}</div>${m.name}</div></td><td>${m.department||'—'}</td><td>${m.destination||'—'}</td><td>${fmtDT(m.check_out)}</td><td>${fmtDT(m.expected_return)}</td><td><span class="pill ${od?'pill-rejected':'pill-progress'}">${od?'Overdue':'Out'}</span></td></tr>`}).join(''):'<tr class="empty-row"><td colspan="6">No staff currently out</td></tr>';
+  const rt=document.getElementById('tbl-recent-tasks');
+  rt.innerHTML=allTasks.length?allTasks.slice(0,5).map(t=>`<tr><td>${t.title}</td><td>${t.assignee_name||'—'}</td><td><span class="pill pill-${(t.priority||'').toLowerCase()}">${t.priority}</span></td><td><span class="pill ${statusPill(t.status)}">${t.status}</span></td><td>${fmtD(t.due_date)}</td></tr>`).join(''):'<tr class="empty-row"><td colspan="5">No tasks yet</td></tr>';
+}
+
+function statusPill(s){return{Assigned:'pill-pending','In Progress':'pill-progress',Completed:'pill-completed',Evaluated:'pill-evaluated',Approved:'pill-approved',Rejected:'pill-rejected'}[s]||'pill-pending'}
+
+function updateApprovalBadge(){
+  const n=allTasks.filter(t=>t.status==='Evaluated').length;
+  const b=document.getElementById('approval-badge');
+  b.textContent=n;b.style.display=n>0?'inline':'none';
 }
 
 function showPage(id,el){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
-  el.classList.add('active');
-  if(id==='movement')populateSelects();
-  if(id==='history'){populateDeptFilter();renderHistory();}
-  if(id==='admin')renderAdmin();
+  if(el)el.classList.add('active');
+  const fns={movement:()=>{populateMovementSelects()},history:()=>{populateDeptFilter();renderHistory()},tasks:()=>renderMyTasks(),assign:()=>{populateTaskSelects();renderAllTasks()},evaluate:()=>renderEvaluate(),approvals:()=>renderApprovals(),perfreport:()=>renderPerfReport(),admin:()=>renderAdmin()};
+  if(fns[id])fns[id]();
 }
 
-function populateSelects(){
+// MOVEMENT
+function populateMovementSelects(){
   const outIds=new Set(allMovements.filter(m=>!m.check_in).map(m=>m.user_id));
   const avail=allUsers.filter(u=>!outIds.has(u.id));
   const outU=allUsers.filter(u=>outIds.has(u.id));
   document.getElementById('out-staff').innerHTML=avail.length?avail.map(u=>`<option value="${u.id}">${u.name} (${u.department})</option>`).join(''):'<option value="">All staff are in</option>';
-  document.getElementById('in-staff').innerHTML=outU.length?outU.map(u=>`<option value="${u.id}">${u.name} (${u.department})</option>`).join(''):'<option value="">No staff currently out</option>';
+  document.getElementById('in-staff').innerHTML=outU.length?outU.map(u=>`<option value="${u.id}">${u.name} (${u.department})</option>`).join(''):'<option value="">No staff out</option>';
   const now=new Date();now.setHours(now.getHours()+2);
   document.getElementById('out-return').value=now.toISOString().slice(0,16);
 }
 
 async function checkOut(){
   const uid=document.getElementById('out-staff').value;
-  if(!uid){showToast('No staff available','e');return}
   const dest=document.getElementById('out-dest').value.trim();
-  if(!dest){showToast('Please enter a destination','e');return}
-  const ret=document.getElementById('out-return').value;
-  const note=document.getElementById('out-note').value;
+  if(!uid||!dest){showToast('Select staff and enter destination','e');return}
   const u=allUsers.find(x=>x.id===uid);
-  const btn=document.getElementById('btn-checkout');
-  btn.disabled=true;btn.textContent='Saving...';
+  const btn=document.getElementById('btn-checkout');btn.disabled=true;btn.textContent='Saving...';
   try{
-    const {error}=await sb.from('movements').insert({user_id:uid,name:u.name,department:u.department,destination:dest,check_out:new Date().toISOString(),expected_return:ret?new Date(ret).toISOString():null,note});
+    const ret=document.getElementById('out-return').value;
+    const{error}=await sb.from('movements').insert({user_id:uid,name:u.name,department:u.department,destination:dest,check_out:new Date().toISOString(),expected_return:ret?new Date(ret).toISOString():null,note:document.getElementById('out-note').value});
     if(error)throw error;
     document.getElementById('out-dest').value='';document.getElementById('out-note').value='';
-    showToast(`${u.name} checked out`,'s');
-    await refreshAll();populateSelects();
+    showToast(`${u.name} checked out`,'s');await refreshAll();populateMovementSelects();
   }catch(e){showToast('Error: '+e.message,'e')}
   btn.disabled=false;btn.textContent='Record Check-Out';
 }
@@ -399,27 +526,23 @@ async function checkOut(){
 async function checkIn(){
   const uid=document.getElementById('in-staff').value;
   if(!uid){showToast('No staff to check in','e');return}
-  const note=document.getElementById('in-note').value;
   const mv=allMovements.find(m=>m.user_id===uid&&!m.check_in);
-  if(!mv){showToast('No active checkout found','e');return}
-  const btn=document.getElementById('btn-checkin');
-  btn.disabled=true;btn.textContent='Saving...';
+  if(!mv){showToast('No active checkout','e');return}
+  const btn=document.getElementById('btn-checkin');btn.disabled=true;btn.textContent='Saving...';
   try{
-    const {error}=await sb.from('movements').update({check_in:new Date().toISOString(),return_note:note||null}).eq('id',mv.id);
+    const{error}=await sb.from('movements').update({check_in:new Date().toISOString(),return_note:document.getElementById('in-note').value||null}).eq('id',mv.id);
     if(error)throw error;
-    const u=allUsers.find(x=>x.id===uid);
     document.getElementById('in-note').value='';
-    showToast(`${u?u.name:'Staff'} checked in`,'s');
-    await refreshAll();populateSelects();
+    const u=allUsers.find(x=>x.id===uid);
+    showToast(`${u?u.name:'Staff'} checked in`,'s');await refreshAll();populateMovementSelects();
   }catch(e){showToast('Error: '+e.message,'e')}
   btn.disabled=false;btn.textContent='Record Check-In';
 }
 
 function populateDeptFilter(){
   const depts=[...new Set(allUsers.map(u=>u.department).filter(Boolean))];
-  const sel=document.getElementById('f-dept');
-  const cur=sel.value;
-  sel.innerHTML='<option value="">All Departments</option>'+depts.map(d=>`<option value="${d}" ${d===cur?'selected':''}>${d}</option>`).join('');
+  const sel=document.getElementById('f-dept');const cur=sel.value;
+  sel.innerHTML='<option value="">All Depts</option>'+depts.map(d=>`<option value="${d}" ${d===cur?'selected':''}>${d}</option>`).join('');
 }
 
 function renderHistory(){
@@ -436,31 +559,231 @@ function renderHistory(){
     return true;
   });
   const tbody=document.getElementById('tbl-hist');
-  if(!data.length){tbody.innerHTML='<tr class="empty-row"><td colspan="6">No records found</td></tr>';return}
-  tbody.innerHTML=data.map(m=>{
-    const od=isOverdue(m);
-    const st=m.check_in?'returned':od?'over':'out';
-    const pill=st==='returned'?'pill-in':st==='over'?'pill-over':'pill-out';
-    const label=st==='returned'?'Returned':st==='over'?'Overdue':'Out';
-    const c=colorFor(m.user_id);
-    const av=`<div class="avatar" style="background:${c}22;color:${c}">${initials(m.name)}</div>`;
-    return`<tr><td><div class="flex-center">${av}${m.name||'—'}</div></td><td>${m.department||'—'}</td><td>${m.destination||'—'}</td><td>${fmtDT(m.check_out)}</td><td>${fmtDT(m.check_in)}</td><td><span class="status-pill ${pill}">${label}</span></td></tr>`
-  }).join('');
+  tbody.innerHTML=data.length?data.map(m=>{const od=isOverdue(m);const st=m.check_in?'returned':od?'over':'out';const pill=st==='returned'?'pill-completed':st==='over'?'pill-rejected':'pill-progress';const label=st==='returned'?'Returned':st==='over'?'Overdue':'Out';const c=colorFor(m.user_id);return`<tr><td><div class="flex-c"><div class="avatar" style="background:${c}22;color:${c}">${initials(m.name)}</div>${m.name||'—'}</div></td><td>${m.department||'—'}</td><td>${m.destination||'—'}</td><td>${fmtDT(m.check_out)}</td><td>${fmtDT(m.check_in)}</td><td><span class="pill ${pill}">${label}</span></td></tr>`}).join(''):'<tr class="empty-row"><td colspan="6">No records</td></tr>';
 }
 
+// TASKS
+function populateTaskSelects(){
+  const staff=allUsers.filter(u=>u.id!==CU.id||CU.role==='admin');
+  document.getElementById('task-assignee').innerHTML=allUsers.map(u=>`<option value="${u.id}">${u.name} (${u.department})</option>`).join('');
+  document.getElementById('task-supervisor').innerHTML=allUsers.filter(u=>u.role==='supervisor'||u.role==='admin').map(u=>`<option value="${u.id}">${u.name}</option>`).join('');
+  const today=new Date();today.setDate(today.getDate()+7);
+  document.getElementById('task-due').value=today.toISOString().slice(0,10);
+}
+
+async function assignTask(){
+  const title=document.getElementById('task-title').value.trim();
+  const aid=document.getElementById('task-assignee').value;
+  const sid=document.getElementById('task-supervisor').value;
+  const priority=document.getElementById('task-priority').value;
+  const desc=document.getElementById('task-desc').value;
+  const due=document.getElementById('task-due').value;
+  const kpi=document.getElementById('task-kpi').value;
+  if(!title||!aid){showToast('Enter task title and assignee','e');return}
+  const au=allUsers.find(x=>x.id===aid);
+  const su=allUsers.find(x=>x.id===sid);
+  const btn=document.getElementById('btn-assign');btn.disabled=true;btn.textContent='Saving...';
+  try{
+    const{error}=await sb.from('tasks').insert({title,description:desc,assignee_id:aid,assignee_name:au?au.name:'',supervisor_id:sid,supervisor_name:su?su.name:'',priority,due_date:due||null,kpi,status:'Assigned',assigned_by:CU.name,assigned_at:new Date().toISOString()});
+    if(error)throw error;
+    document.getElementById('task-title').value='';document.getElementById('task-desc').value='';document.getElementById('task-kpi').value='';
+    showToast(`Task assigned to ${au?au.name:'staff'}`,'s');await refreshAll();renderAllTasks();
+  }catch(e){showToast('Error: '+e.message,'e')}
+  btn.disabled=false;btn.textContent='Assign Task';
+}
+
+function renderMyTasks(){
+  const my=allTasks.filter(t=>t.assignee_id===CU.id);
+  const tbody=document.getElementById('tbl-my-tasks');
+  tbody.innerHTML=my.length?my.map(t=>`<tr>
+    <td>${t.title}</td><td>${t.assigned_by||'—'}</td>
+    <td><span class="pill pill-${(t.priority||'').toLowerCase()}">${t.priority}</span></td>
+    <td>${fmtD(t.due_date)}</td>
+    <td><span class="pill ${statusPill(t.status)}">${t.status}</span></td>
+    <td>${['Assigned','In Progress'].includes(t.status)?`<button class="btn-sm btn-sm-accent" onclick="openUpdateModal('${t.id}')">Update</button>`:`<button class="btn-sm" onclick="openDetailModal('${t.id}')">View</button>`}</td>
+  </tr>`).join(''):'<tr class="empty-row"><td colspan="6">No tasks assigned to you</td></tr>';
+}
+
+function renderAllTasks(){
+  const tbody=document.getElementById('tbl-all-tasks');
+  tbody.innerHTML=allTasks.length?allTasks.map(t=>`<tr>
+    <td>${t.title}</td><td>${t.assignee_name||'—'}</td><td>${t.supervisor_name||'—'}</td>
+    <td><span class="pill pill-${(t.priority||'').toLowerCase()}">${t.priority}</span></td>
+    <td>${fmtD(t.due_date)}</td>
+    <td><span class="pill ${statusPill(t.status)}">${t.status}</span></td>
+    <td><button class="btn-sm" onclick="openDetailModal('${t.id}')">View</button></td>
+  </tr>`).join(''):'<tr class="empty-row"><td colspan="7">No tasks yet</td></tr>';
+}
+
+function renderEvaluate(){
+  const toEval=allTasks.filter(t=>t.status==='Completed'&&(t.supervisor_id===CU.id||CU.role==='admin'));
+  const tbody=document.getElementById('tbl-evaluate');
+  tbody.innerHTML=toEval.length?toEval.map(t=>`<tr>
+    <td>${t.title}</td><td>${t.assignee_name||'—'}</td>
+    <td>${fmtDT(t.completed_at)}</td><td>${t.kpi||'—'}</td>
+    <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis">${t.completion_notes||'—'}</td>
+    <td><button class="btn-sm btn-sm-warn" onclick="openEvalModal('${t.id}')">Evaluate</button></td>
+  </tr>`).join(''):'<tr class="empty-row"><td colspan="6">No completed tasks awaiting evaluation</td></tr>';
+}
+
+function renderApprovals(){
+  const pending=allTasks.filter(t=>t.status==='Evaluated'&&(t.supervisor_id===CU.id||CU.role==='admin'));
+  const done=allTasks.filter(t=>['Approved','Rejected'].includes(t.status));
+  const tbody=document.getElementById('tbl-approvals');
+  tbody.innerHTML=pending.length?pending.map(t=>`<tr>
+    <td>${t.title}</td><td>${t.assignee_name||'—'}</td>
+    <td><span class="stars">${stars(t.rating||0)}</span></td>
+    <td>${t.outcome||'—'}</td>
+    <td style="max-width:140px">${t.supervisor_comments||'—'}</td>
+    <td style="display:flex;gap:4px;padding-top:9px">
+      <button class="btn-sm btn-sm-accent" onclick="signOff('${t.id}','Approved')">Approve</button>
+      <button class="btn-sm btn-sm-danger" onclick="signOff('${t.id}','Rejected')">Reject</button>
+    </td>
+  </tr>`).join(''):'<tr class="empty-row"><td colspan="6">No pending approvals</td></tr>';
+  const tbody2=document.getElementById('tbl-signoffs');
+  tbody2.innerHTML=done.length?done.map(t=>`<tr>
+    <td>${t.title}</td><td>${t.assignee_name||'—'}</td>
+    <td><span class="stars">${stars(t.rating||0)}</span></td>
+    <td>${t.outcome||'—'}</td><td>${t.approved_by||'—'}</td>
+    <td>${fmtDT(t.approved_at)}</td>
+    <td><span class="pill ${t.status==='Approved'?'pill-approved':'pill-rejected'}">${t.status}</span></td>
+  </tr>`).join(''):'<tr class="empty-row"><td colspan="7">No completed sign-offs yet</td></tr>';
+}
+
+function renderPerfReport(){
+  const sf=document.getElementById('rpt-staff').value;
+  const of=document.getElementById('rpt-outcome').value;
+  const staffSel=document.getElementById('rpt-staff');
+  if(staffSel.options.length<=1){allUsers.forEach(u=>{const o=document.createElement('option');o.value=u.id;o.textContent=u.name;staffSel.appendChild(o)})}
+  let data=allTasks.filter(t=>['Approved','Rejected'].includes(t.status));
+  if(sf)data=data.filter(t=>t.assignee_id===sf);
+  if(of)data=data.filter(t=>t.outcome===of);
+  const all=allTasks;
+  const rated=all.filter(t=>t.rating);
+  const avg=rated.length?(rated.reduce((a,t)=>a+(t.rating||0),0)/rated.length).toFixed(1):'—';
+  document.getElementById('rpt-total').textContent=all.length;
+  document.getElementById('rpt-avg').textContent=avg==='—'?'—':avg+'★';
+  document.getElementById('rpt-approved').textContent=all.filter(t=>t.status==='Approved').length;
+  const tbody=document.getElementById('tbl-perf-report');
+  tbody.innerHTML=data.length?data.map(t=>`<tr>
+    <td>${t.title}</td><td>${t.assignee_name||'—'}</td><td>${t.supervisor_name||'—'}</td>
+    <td><span class="stars">${stars(t.rating||0)}</span></td>
+    <td>${t.outcome||'—'}</td><td>${t.approved_by||'—'}</td><td>${fmtDT(t.approved_at)}</td>
+    <td><button class="btn-sm" onclick="openDetailModal('${t.id}')">Audit</button></td>
+  </tr>`).join(''):'<tr class="empty-row"><td colspan="8">No completed evaluations</td></tr>';
+}
+
+// MODALS
+function openEvalModal(tid){
+  const t=allTasks.find(x=>x.id===tid);if(!t)return;
+  document.getElementById('eval-task-id').value=tid;
+  document.getElementById('eval-rating').value=0;
+  document.querySelectorAll('.rating-star').forEach(s=>s.classList.remove('active'));
+  document.getElementById('eval-comments').value='';
+  document.getElementById('eval-task-info').innerHTML=`
+    <div class="info-row"><span class="info-label">Task</span><span class="info-val">${t.title}</span></div>
+    <div class="info-row"><span class="info-label">Staff</span><span class="info-val">${t.assignee_name}</span></div>
+    <div class="info-row"><span class="info-label">KPI</span><span class="info-val">${t.kpi||'—'}</span></div>
+    <div class="info-row"><span class="info-label">Completion Notes</span><span class="info-val">${t.completion_notes||'—'}</span></div>`;
+  document.getElementById('modal-eval').classList.add('open');
+}
+
+function setRating(n){
+  document.getElementById('eval-rating').value=n;
+  document.querySelectorAll('.rating-star').forEach((s,i)=>s.classList.toggle('active',i<n));
+}
+
+async function submitEvaluation(){
+  const tid=document.getElementById('eval-task-id').value;
+  const rating=parseInt(document.getElementById('eval-rating').value);
+  const outcome=document.getElementById('eval-outcome').value;
+  const comments=document.getElementById('eval-comments').value;
+  if(!rating){showToast('Please set a star rating','e');return}
+  const btn=document.getElementById('btn-submit-eval');btn.disabled=true;btn.textContent='Saving...';
+  try{
+    const{error}=await sb.from('tasks').update({status:'Evaluated',rating,outcome,supervisor_comments:comments,evaluated_by:CU.name,evaluated_at:new Date().toISOString()}).eq('id',tid);
+    if(error)throw error;
+    showToast('Evaluation submitted — sent for approval','s');
+    closeModal('modal-eval');await refreshAll();renderEvaluate();updateApprovalBadge();
+  }catch(e){showToast('Error: '+e.message,'e')}
+  btn.disabled=false;btn.textContent='Submit Evaluation → Send for Approval';
+}
+
+async function signOff(tid,decision){
+  try{
+    const{error}=await sb.from('tasks').update({status:decision,approved_by:CU.name,approved_at:new Date().toISOString()}).eq('id',tid);
+    if(error)throw error;
+    showToast(`Task ${decision.toLowerCase()} and locked`,'s');
+    await refreshAll();renderApprovals();updateApprovalBadge();
+  }catch(e){showToast('Error: '+e.message,'e')}
+}
+
+function openUpdateModal(tid){
+  const t=allTasks.find(x=>x.id===tid);if(!t)return;
+  document.getElementById('update-task-id').value=tid;
+  document.getElementById('update-notes').value='';
+  document.getElementById('update-status').value=t.status==='In Progress'?'In Progress':'Assigned';
+  document.getElementById('update-task-info').innerHTML=`
+    <div class="info-row"><span class="info-label">Task</span><span class="info-val">${t.title}</span></div>
+    <div class="info-row"><span class="info-label">KPI</span><span class="info-val">${t.kpi||'—'}</span></div>
+    <div class="info-row"><span class="info-label">Due</span><span class="info-val">${fmtD(t.due_date)}</span></div>`;
+  document.getElementById('modal-update').classList.add('open');
+}
+
+async function submitTaskUpdate(){
+  const tid=document.getElementById('update-task-id').value;
+  const status=document.getElementById('update-status').value;
+  const notes=document.getElementById('update-notes').value;
+  const btn=document.getElementById('btn-submit-update');btn.disabled=true;btn.textContent='Saving...';
+  try{
+    const upd={status,completion_notes:notes};
+    if(status==='Completed')upd.completed_at=new Date().toISOString();
+    const{error}=await sb.from('tasks').update(upd).eq('id',tid);
+    if(error)throw error;
+    showToast(status==='Completed'?'Task marked complete — awaiting evaluation':'Task updated','s');
+    closeModal('modal-update');await refreshAll();renderMyTasks();
+  }catch(e){showToast('Error: '+e.message,'e')}
+  btn.disabled=false;btn.textContent='Update Task';
+}
+
+function openDetailModal(tid){
+  const t=allTasks.find(x=>x.id===tid);if(!t)return;
+  const steps=['Assigned','In Progress','Completed','Evaluated','Approved'];
+  const ci=steps.indexOf(t.status);
+  const wf=steps.map((s,i)=>`<div class="w-step ${i<ci?'done':i===ci?'active':''}"><div class="w-dot">${i<ci?'✓':i+1}</div>${s}</div>${i<steps.length-1?`<div class="w-line ${i<ci?'done':''}"></div>`:''}`).join('');
+  document.getElementById('detail-content').innerHTML=`
+    <div class="workflow-steps">${wf}</div>
+    <div class="info-row"><span class="info-label">Title</span><span class="info-val">${t.title}</span></div>
+    <div class="info-row"><span class="info-label">Description</span><span class="info-val">${t.description||'—'}</span></div>
+    <div class="info-row"><span class="info-label">Assigned To</span><span class="info-val">${t.assignee_name}</span></div>
+    <div class="info-row"><span class="info-label">Supervisor</span><span class="info-val">${t.supervisor_name||'—'}</span></div>
+    <div class="info-row"><span class="info-label">Priority</span><span class="info-val">${t.priority}</span></div>
+    <div class="info-row"><span class="info-label">KPI</span><span class="info-val">${t.kpi||'—'}</span></div>
+    <div class="info-row"><span class="info-label">Due Date</span><span class="info-val">${fmtD(t.due_date)}</span></div>
+    <div class="info-row"><span class="info-label">Assigned By</span><span class="info-val">${t.assigned_by||'—'} · ${fmtDT(t.assigned_at)}</span></div>
+    <div class="info-row"><span class="info-label">Completion Notes</span><span class="info-val">${t.completion_notes||'—'}</span></div>
+    <div class="info-row"><span class="info-label">Completed At</span><span class="info-val">${fmtDT(t.completed_at)}</span></div>
+    <div class="info-row"><span class="info-label">Rating</span><span class="info-val">${t.rating?'★'.repeat(t.rating)+'☆'.repeat(5-t.rating):'—'}</span></div>
+    <div class="info-row"><span class="info-label">Outcome</span><span class="info-val">${t.outcome||'—'}</span></div>
+    <div class="info-row"><span class="info-label">Supervisor Comments</span><span class="info-val">${t.supervisor_comments||'—'}</span></div>
+    <div class="info-row"><span class="info-label">Evaluated By</span><span class="info-val">${t.evaluated_by||'—'} · ${fmtDT(t.evaluated_at)}</span></div>
+    <div class="info-row"><span class="info-label">Sign-Off</span><span class="info-val">${t.approved_by||'—'} · ${fmtDT(t.approved_at)}</span></div>
+    <div class="info-row"><span class="info-label">Final Status</span><span class="info-val"><span class="pill ${statusPill(t.status)}">${t.status}</span></span></div>`;
+  document.getElementById('modal-detail').classList.add('open');
+}
+
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+
+// ADMIN
 async function renderAdmin(){
-  document.getElementById('user-list').innerHTML='<span class="spinner"></span> Loading...';
   await refreshAll();
   document.getElementById('user-list').innerHTML=allUsers.map(u=>`
-    <div class="user-row">
-      <div class="flex-center" style="gap:10px">
+    <div class="user-row" style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border)">
+      <div class="flex-c" style="gap:8px">
         <div class="avatar" style="background:${colorFor(u.id)}22;color:${colorFor(u.id)}">${initials(u.name)}</div>
-        <div class="user-info">
-          <div class="un">${u.name}</div>
-          <div class="ud">${u.email} · ${u.department||'—'} · <span class="status-pill ${u.role==='admin'?'pill-in':'pill-out'}" style="padding:1px 7px;font-size:10px">${u.role}</span></div>
-        </div>
+        <div><div style="font-size:12px;font-weight:500">${u.name}</div><div style="font-size:10px;color:var(--text2)">${u.email} · ${u.department||'—'} · <span class="pill ${u.role==='admin'?'pill-approved':u.role==='supervisor'?'pill-evaluated':'pill-progress'}" style="padding:1px 6px;font-size:9px">${u.role}</span></div></div>
       </div>
-      <div>${u.id!==currentUser.id?`<button class="btn-sm btn-danger" onclick="removeUser('${u.id}','${u.name}')">Remove</button>`:'<span style="font-size:11px;color:var(--text3)">You</span>'}</div>
+      ${u.id!==CU.id?`<button class="btn-sm btn-sm-danger" onclick="removeUser('${u.id}','${u.name}')">Remove</button>`:'<span style="font-size:10px;color:var(--text3)">You</span>'}
     </div>`).join('');
 }
 
@@ -470,48 +793,31 @@ async function addUser(){
   const pass=document.getElementById('add-pass').value;
   const dept=document.getElementById('add-dept').value;
   const role=document.getElementById('add-role').value;
-  if(!name||!email||!pass){showToast('Please fill all fields','e');return}
-  const btn=document.getElementById('btn-adduser');
-  btn.disabled=true;btn.textContent='Saving...';
+  if(!name||!email||!pass){showToast('Fill all fields','e');return}
+  const btn=document.getElementById('btn-adduser');btn.disabled=true;btn.textContent='Saving...';
   try{
-    const {error}=await sb.from('users').insert({name,email,password:pass,role,department:dept});
+    const{error}=await sb.from('users').insert({name,email,password:pass,role,department:dept});
     if(error)throw error;
     document.getElementById('add-name').value='';document.getElementById('add-email').value='';document.getElementById('add-pass').value='';
-    showToast(`${name} added`,'s');
-    await renderAdmin();
-  }catch(e){showToast('Error: '+(e.message.includes('unique')?'Email already exists':e.message),'e')}
+    showToast(`${name} added`,'s');await renderAdmin();
+  }catch(e){showToast('Error: '+(e.message.includes('unique')?'Email exists':e.message),'e')}
   btn.disabled=false;btn.textContent='Add User';
 }
 
 async function removeUser(id,name){
   if(!confirm(`Remove ${name}?`))return;
-  try{
-    const {error}=await sb.from('users').delete().eq('id',id);
-    if(error)throw error;
-    showToast(`${name} removed`,'s');
-    await renderAdmin();
-  }catch(e){showToast('Error: '+e.message,'e')}
+  try{const{error}=await sb.from('users').delete().eq('id',id);if(error)throw error;showToast(`${name} removed`,'s');await renderAdmin();}
+  catch(e){showToast('Error: '+e.message,'e')}
 }
 
-function exportCSV(){
-  const rows=[['Name','Department','Destination','Check-Out','Expected Return','Check-In','Notes'],...allMovements.map(m=>[m.name,m.department,m.destination,fmtDT(m.check_out),fmtDT(m.expected_return),fmtDT(m.check_in),m.note||''])];
-  const csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
-  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download='movement_log_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
-  showToast('Movement log exported','s');
-}
+// EXPORTS
+function exportMvCSV(){const rows=[['Name','Department','Destination','Check-Out','Expected Return','Check-In','Notes'],...allMovements.map(m=>[m.name,m.department,m.destination,fmtDT(m.check_out),fmtDT(m.expected_return),fmtDT(m.check_in),m.note||''])];dlCSV(rows,'movement_log.csv')}
+function exportUsers(){const rows=[['Name','Email','Department','Role'],...allUsers.map(u=>[u.name,u.email,u.department,u.role])];dlCSV(rows,'staff_list.csv')}
+function exportTasksCSV(){const rows=[['Title','Assigned To','Supervisor','Priority','Due','Status','KPI'],...allTasks.map(t=>[t.title,t.assignee_name,t.supervisor_name,t.priority,fmtD(t.due_date),t.status,t.kpi||''])];dlCSV(rows,'tasks.csv')}
+function exportPerfCSV(){const rows=[['Task','Staff','Supervisor','Rating','Outcome','Comments','Approved By','Date'],...allTasks.filter(t=>t.rating).map(t=>[t.title,t.assignee_name,t.supervisor_name,t.rating,t.outcome,t.supervisor_comments,t.approved_by||'',fmtDT(t.approved_at)])];dlCSV(rows,'performance_report.csv')}
+function dlCSV(rows,fn){const csv=rows.map(r=>r.map(c=>`"${String(c||'').replace(/"/g,'""')}"`).join(',')).join('\n');const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download=fn;a.click();showToast('Exported','s')}
 
-function exportUsers(){
-  const rows=[['Name','Email','Department','Role'],...allUsers.map(u=>[u.name,u.email,u.department,u.role])];
-  const csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
-  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download='staff_list_'+new Date().toISOString().slice(0,10)+'.csv';a.click();
-  showToast('User list exported','s');
-}
-
-function showToast(msg,type='s'){
-  const t=document.getElementById('toast');
-  t.textContent=msg;t.className='toast show toast-'+(type==='s'?'s':'e');
-  setTimeout(()=>t.className='toast',2800);
-}
+function showToast(msg,type='s'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show toast-'+(type==='s'?'s':'e');setTimeout(()=>t.className='toast',2800)}
 </script>
 </body>
 </html>
