@@ -1,0 +1,935 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--navy:#0d1b2a;--navy2:#1a2e45;--accent:#00c9a7;--accent2:#0099ff;--danger:#e24b4a;--warn:#ef9f27;--text:#e8eef4;--text2:#8ca0b5;--text3:#4a6380;--card:#162030;--card2:#1d2d40;--border:#1e3148;--radius:10px}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--navy);color:var(--text);min-height:600px;overflow:hidden}
+#auth-screen{display:flex;align-items:center;justify-content:center;min-height:600px}
+.auth-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:2.5rem;width:400px;max-width:95vw;text-align:center}
+.auth-logo .icon{width:60px;height:60px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:28px}
+.auth-logo h1{font-size:1.4rem;font-weight:700;margin-bottom:4px}
+.auth-logo p{font-size:12px;color:var(--text2);margin-bottom:28px}
+.ms-btn{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;background:#fff;border:none;border-radius:8px;padding:13px 20px;font-size:14px;font-weight:600;color:#1a1a1a;cursor:pointer;transition:all 0.2s;margin-bottom:12px}
+.ms-btn:hover{background:#f0f0f0;transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,0.2)}
+.ms-btn:disabled{opacity:0.6;cursor:not-allowed;transform:none}
+.ms-btn svg{width:20px;height:20px;flex-shrink:0}
+.auth-divider{font-size:11px;color:var(--text3);margin:16px 0;display:flex;align-items:center;gap:10px}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.field{margin-bottom:1rem;text-align:left}
+.field label{display:block;font-size:12px;color:var(--text2);margin-bottom:6px;font-weight:500;letter-spacing:0.04em;text-transform:uppercase}
+.field input{width:100%;background:var(--navy);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:14px;outline:none}
+.field input:focus{border-color:var(--accent)}
+.btn-primary{width:100%;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:8px;padding:11px;color:#fff;font-size:14px;font-weight:600;cursor:pointer}
+.btn-primary:disabled{opacity:0.5;cursor:not-allowed}
+.err-msg{color:var(--danger);font-size:12px;margin-top:8px}
+.auth-note{font-size:11px;color:var(--text3);margin-top:16px;padding:10px;background:var(--navy);border-radius:8px;text-align:left}
+#app{display:none;height:600px;overflow:hidden}
+.sidebar{width:210px;background:var(--card);border-right:1px solid var(--border);height:600px;display:flex;flex-direction:column;position:fixed;left:0;top:0;z-index:10}
+.sidebar-logo{padding:16px 16px 12px;border-bottom:1px solid var(--border)}
+.sidebar-logo .s-icon{width:28px;height:28px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:7px;display:inline-flex;align-items:center;justify-content:center;font-size:13px;vertical-align:middle;margin-right:7px}
+.sidebar-logo span{font-size:13px;font-weight:700;vertical-align:middle}
+.nav{flex:1;padding:10px 8px;overflow-y:auto}
+.nav-section{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;font-weight:600;padding:8px 12px 4px}
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:12.5px;color:var(--text2);margin-bottom:1px;transition:all 0.15s}
+.nav-item:hover{background:var(--card2);color:var(--text)}
+.nav-item.active{background:rgba(0,201,167,0.12);color:var(--accent)}
+.sidebar-user{padding:12px 14px;border-top:1px solid var(--border)}
+.sidebar-user .u-name{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sidebar-user .u-role{font-size:11px;color:var(--text2)}
+.u-badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:20px;margin-top:3px;font-weight:600}
+.badge-admin{background:rgba(0,201,167,0.15);color:var(--accent)}
+.badge-staff{background:rgba(0,153,255,0.15);color:var(--accent2)}
+.badge-supervisor{background:rgba(239,159,39,0.15);color:var(--warn)}
+.sso-badge{display:inline-flex;align-items:center;gap:4px;font-size:9px;padding:2px 6px;border-radius:20px;background:rgba(0,153,255,0.1);color:var(--accent2);margin-left:4px;font-weight:600}
+.logout-btn{font-size:11px;color:var(--text3);cursor:pointer;margin-top:6px;display:block}
+.logout-btn:hover{color:var(--danger)}
+.main{margin-left:210px;height:600px;overflow-y:auto;padding:18px 20px}
+.page{display:none}.page.active{display:block}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.topbar h2{font-size:1.05rem;font-weight:700}
+.topbar .sub{font-size:11px;color:var(--text2);margin-top:2px}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px}
+.sc-label{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.06em;font-weight:600}
+.sc-val{font-size:1.5rem;font-weight:700;margin:3px 0 1px}
+.sc-sub{font-size:10px;color:var(--text2)}
+.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:14px}
+.table-header{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.table-header h3{font-size:12px;font-weight:600}
+table{width:100%;border-collapse:collapse;font-size:11.5px}
+th{background:var(--card2);padding:8px 10px;text-align:left;font-size:10px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;white-space:nowrap}
+td{padding:8px 10px;border-top:1px solid var(--border);color:var(--text2);vertical-align:middle}
+td:first-child{color:var(--text);font-weight:500}
+tr:hover td{background:rgba(255,255,255,0.02)}
+.pill{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;white-space:nowrap}
+.pill-assigned{background:rgba(239,159,39,0.15);color:var(--warn)}
+.pill-progress{background:rgba(0,153,255,0.15);color:var(--accent2)}
+.pill-completed{background:rgba(0,201,167,0.15);color:var(--accent)}
+.pill-evaluated{background:rgba(99,153,34,0.2);color:#97c459}
+.pill-approved{background:rgba(0,201,167,0.25);color:var(--accent)}
+.pill-rejected{background:rgba(226,75,74,0.15);color:var(--danger)}
+.pill-r1{background:rgba(0,153,255,0.15);color:var(--accent2)}
+.pill-r2{background:rgba(239,159,39,0.15);color:var(--warn)}
+.pill-r3{background:rgba(0,201,167,0.15);color:var(--accent)}
+.pill-r4{background:rgba(212,83,126,0.15);color:#d4537e}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:14px}
+.form-card h3{font-size:12px;font-weight:600;margin-bottom:12px}
+.form-row{margin-bottom:9px}
+.form-row label{display:block;font-size:10px;color:var(--text2);margin-bottom:4px;font-weight:500;text-transform:uppercase;letter-spacing:0.04em}
+.form-row input,.form-row select,.form-row textarea{width:100%;background:var(--navy);border:1px solid var(--border);border-radius:6px;padding:7px 10px;color:var(--text);font-size:12px;outline:none;font-family:inherit}
+.form-row input:focus,.form-row select:focus,.form-row textarea:focus{border-color:var(--accent)}
+.form-row select option{background:var(--navy)}
+.form-row textarea{resize:vertical;min-height:60px}
+.btn-action{width:100%;padding:8px;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;transition:opacity 0.15s}
+.btn-action:disabled{opacity:0.4;cursor:not-allowed}
+.btn-accent{background:rgba(0,201,167,0.2);color:var(--accent)}
+.btn-blue{background:rgba(0,153,255,0.2);color:var(--accent2)}
+.btn-action:hover:not(:disabled){opacity:0.75}
+.btn-sm{padding:3px 8px;border:1px solid var(--border);border-radius:5px;font-size:10px;cursor:pointer;background:transparent;color:var(--text2);white-space:nowrap}
+.btn-sm:hover{background:var(--card2);color:var(--text)}
+.btn-sm-accent{border-color:rgba(0,201,167,0.4);color:var(--accent)}
+.btn-sm-warn{border-color:rgba(239,159,39,0.4);color:var(--warn)}
+.btn-sm-danger{border-color:rgba(226,75,74,0.4);color:var(--danger)}
+.export-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;background:rgba(0,201,167,0.12);color:var(--accent);border:1px solid rgba(0,201,167,0.3);border-radius:6px;font-size:11px;font-weight:600;cursor:pointer}
+.export-btn:hover{background:rgba(0,201,167,0.22)}
+.filters{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+.filters input,.filters select{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:6px 10px;color:var(--text);font-size:11px;outline:none}
+.filters select option{background:var(--navy)}
+.toast{position:fixed;bottom:16px;right:16px;background:var(--card2);border:1px solid var(--border);border-radius:9px;padding:10px 16px;font-size:12px;z-index:999;transform:translateY(80px);transition:transform 0.3s;pointer-events:none;max-width:300px}
+.toast.show{transform:translateY(0)}
+.toast-s{border-left:3px solid var(--accent)}
+.toast-e{border-left:3px solid var(--danger)}
+.toast-i{border-left:3px solid var(--accent2)}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+.empty-row td{text-align:center;padding:20px;color:var(--text3);font-size:12px}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:5px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.avatar{width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;margin-right:6px;vertical-align:middle;flex-shrink:0}
+.flex-c{display:flex;align-items:center}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:100;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;width:560px;max-width:96vw;max-height:85vh;overflow-y:auto}
+.modal h3{font-size:14px;font-weight:600;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
+.modal-close{cursor:pointer;color:var(--text3);font-size:18px}
+.modal-close:hover{color:var(--danger)}
+.info-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px}
+.info-row:last-child{border-bottom:none}
+.info-label{color:var(--text2);flex-shrink:0;margin-right:12px}
+.info-val{color:var(--text);font-weight:500;text-align:right}
+.criteria-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+.criteria-item{background:var(--navy);border:1px solid var(--border);border-radius:8px;padding:10px 12px}
+.criteria-item label{display:block;font-size:10px;color:var(--text2);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em}
+.score-btns{display:flex;gap:4px}
+.score-btn{flex:1;padding:5px 2px;border:1px solid var(--border);border-radius:5px;font-size:10px;cursor:pointer;background:transparent;color:var(--text2);text-align:center;transition:all 0.15s;font-weight:600}
+.score-btn.s1.active{background:rgba(226,75,74,0.2);border-color:var(--danger);color:var(--danger)}
+.score-btn.s2.active{background:rgba(239,159,39,0.2);border-color:var(--warn);color:var(--warn)}
+.score-btn.s3.active{background:rgba(0,153,255,0.2);border-color:var(--accent2);color:var(--accent2)}
+.score-btn.s4.active{background:rgba(0,201,167,0.2);border-color:var(--accent);color:var(--accent)}
+.score-badge{display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700}
+.sb1{background:rgba(226,75,74,0.15);color:var(--danger)}
+.sb2{background:rgba(239,159,39,0.15);color:var(--warn)}
+.sb3{background:rgba(0,153,255,0.15);color:var(--accent2)}
+.sb4{background:rgba(0,201,167,0.2);color:var(--accent)}
+.workflow-steps{display:flex;align-items:center;margin:12px 0 16px}
+.w-step{flex:1;text-align:center;font-size:9px;color:var(--text3)}
+.w-step.done{color:var(--accent)}.w-step.active-s{color:var(--accent2)}
+.w-dot{width:20px;height:20px;border-radius:50%;border:2px solid var(--border);margin:0 auto 3px;display:flex;align-items:center;justify-content:center;font-size:9px;background:var(--navy)}
+.w-step.done .w-dot{background:var(--accent);border-color:var(--accent);color:#fff}
+.w-step.active-s .w-dot{border-color:var(--accent2);color:var(--accent2)}
+.w-line{height:2px;background:var(--border);flex:1;margin-top:-12px}
+.w-line.done{background:var(--accent)}
+.db-live{display:inline-block;font-size:10px;padding:2px 7px;border-radius:20px;background:rgba(0,201,167,0.15);color:var(--accent);margin-left:4px;font-weight:600}
+.notif-badge{display:inline-block;background:var(--danger);color:#fff;border-radius:20px;font-size:9px;padding:1px 5px;margin-left:4px}
+.team-tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;background:rgba(0,153,255,0.1);color:var(--accent2);margin-right:4px}
+.associate-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:10px}
+.rotation-tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.rot-tab{padding:5px 14px;border:1px solid var(--border);border-radius:20px;font-size:11px;cursor:pointer;color:var(--text2);font-weight:500}
+.rot-tab:hover{border-color:var(--accent2);color:var(--accent2)}
+.rot-tab.active{background:rgba(0,201,167,0.12);border-color:var(--accent);color:var(--accent)}
+.loading-overlay{position:fixed;inset:0;background:var(--navy);display:flex;align-items:center;justify-content:center;z-index:200;flex-direction:column;gap:14px}
+.loading-overlay.hidden{display:none}
+.loading-text{font-size:13px;color:var(--text2)}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div class="loading-overlay" id="loading-overlay">
+  <div style="width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite"></div>
+  <div class="loading-text" id="loading-text">Initialising StaffTrack...</div>
+</div>
+
+<!-- AUTH -->
+<div id="auth-screen" style="display:none">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <div class="icon">⚖️</div>
+      <h1>StaffTrack</h1>
+      <p>Movement & Performance Register · aelex.com</p>
+    </div>
+    <button class="ms-btn" id="sso-btn" onclick="signInWithMicrosoft()">
+      <svg viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg">
+        <rect x="1" y="1" width="9" height="9" fill="#f25022"/>
+        <rect x="11" y="1" width="9" height="9" fill="#7fba00"/>
+        <rect x="1" y="11" width="9" height="9" fill="#00a4ef"/>
+        <rect x="11" y="11" width="9" height="9" fill="#ffb900"/>
+      </svg>
+      Sign in with Microsoft
+    </button>
+    <div class="auth-divider">or use local account</div>
+    <div class="field"><label>Email</label><input type="email" id="login-email" placeholder="you@aelex.com"></div>
+    <div class="field"><label>Password</label><input type="password" id="login-pass" placeholder="••••••••"></div>
+    <button class="btn-primary" id="login-btn" onclick="doLocalLogin()">Sign In</button>
+    <div class="err-msg" id="login-err"></div>
+    <div class="auth-note">🔐 Microsoft SSO is the recommended sign-in method for aelex.com staff. Your role is assigned automatically based on your Microsoft 365 group membership.</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="sidebar">
+    <div class="sidebar-logo"><span class="s-icon">⚖️</span><span>StaffTrack</span></div>
+    <nav class="nav">
+      <div class="nav-section">Movement</div>
+      <div class="nav-item active" onclick="showPage('dashboard',this)">📊 Dashboard</div>
+      <div class="nav-item" onclick="showPage('movement',this)">🚶 Movement</div>
+      <div class="nav-item" onclick="showPage('history',this)">📋 History</div>
+      <div class="nav-section">Performance</div>
+      <div class="nav-item" onclick="showPage('mytasks',this)">📌 My Tasks</div>
+      <div class="nav-item" id="nav-assign" onclick="showPage('assign',this)">➕ Assign Task</div>
+      <div class="nav-item" id="nav-evaluate" onclick="showPage('evaluate',this)">⭐ Evaluate</div>
+      <div class="nav-item" id="nav-approvals" onclick="showPage('approvals',this)">✅ Approvals <span id="approval-badge" class="notif-badge" style="display:none">0</span></div>
+      <div class="nav-item" id="nav-reports" onclick="showPage('reports',this)">📈 Reports</div>
+      <div class="nav-item" id="nav-associates" onclick="showPage('associates',this)">👥 Associates</div>
+      <div class="nav-section admin-only">Admin</div>
+      <div class="nav-item admin-only" onclick="showPage('admin',this)">⚙️ Admin Panel</div>
+    </nav>
+    <div class="sidebar-user">
+      <div class="u-name" id="sb-name">—</div>
+      <div class="u-role" id="sb-dept">—</div>
+      <div style="margin-top:3px">
+        <span class="u-badge" id="sb-badge">—</span>
+        <span class="sso-badge" id="sso-indicator" style="display:none">🔐 SSO</span>
+        <span class="db-live">● Live</span>
+      </div>
+      <span class="logout-btn" onclick="doLogout()">Sign out</span>
+    </div>
+  </div>
+
+  <div class="main">
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="topbar"><div><h2>Dashboard</h2><div class="sub" id="dash-time">—</div></div><button class="export-btn" onclick="refreshAll()">↻ Refresh</button></div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="sc-label">Currently Out</div><div class="sc-val" style="color:var(--accent2)" id="stat-out">—</div><div class="sc-sub">staff out</div></div>
+        <div class="stat-card"><div class="sc-label">Active Tasks</div><div class="sc-val" style="color:var(--warn)" id="stat-tasks">—</div><div class="sc-sub">in progress</div></div>
+        <div class="stat-card"><div class="sc-label">Pending Approval</div><div class="sc-val" style="color:var(--accent)" id="stat-approvals">—</div><div class="sc-sub">awaiting sign-off</div></div>
+        <div class="stat-card"><div class="sc-label">Avg Score</div><div class="sc-val" style="color:var(--warn)" id="stat-avg">—</div><div class="sc-sub">across all reviews</div></div>
+      </div>
+      <div class="table-wrap" style="margin-bottom:14px">
+        <div class="table-header"><h3>Currently Out</h3></div>
+        <table><thead><tr><th>Staff</th><th>Dept</th><th>Destination</th><th>Out Since</th><th>Expected</th><th>Status</th></tr></thead>
+        <tbody id="tbl-out"></tbody></table>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header"><h3>Recent Task Activity</h3></div>
+        <table><thead><tr><th>Task</th><th>Associate</th><th>Team</th><th>Rotation</th><th>Status</th><th>Avg Score</th></tr></thead>
+        <tbody id="tbl-recent-tasks"></tbody></table>
+      </div>
+    </div>
+
+    <!-- MOVEMENT -->
+    <div class="page" id="page-movement">
+      <div class="topbar"><div><h2>Record Movement</h2></div></div>
+      <div class="form-grid">
+        <div class="form-card">
+          <h3>🚪 Check-Out</h3>
+          <div class="form-row"><label>Staff Member</label><select id="out-staff"></select></div>
+          <div class="form-row"><label>Destination</label><input type="text" id="out-dest" placeholder="e.g. Client Meeting"></div>
+          <div class="form-row"><label>Expected Return</label><input type="datetime-local" id="out-return"></div>
+          <div class="form-row"><label>Notes</label><input type="text" id="out-note"></div>
+          <button class="btn-action btn-blue" id="btn-checkout" onclick="checkOut()">Record Check-Out</button>
+        </div>
+        <div class="form-card">
+          <h3>✅ Check-In</h3>
+          <div class="form-row"><label>Staff (Currently Out)</label><select id="in-staff"></select></div>
+          <div class="form-row"><label>Return Notes</label><input type="text" id="in-note"></div>
+          <button class="btn-action btn-accent" id="btn-checkin" onclick="checkIn()" style="margin-top:60px">Record Check-In</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- HISTORY -->
+    <div class="page" id="page-history">
+      <div class="topbar"><div><h2>Movement History</h2></div><button class="export-btn" onclick="exportMvCSV()">⬇ Export CSV</button></div>
+      <div class="filters">
+        <input type="text" id="f-search" placeholder="Search..." oninput="renderHistory()" style="flex:1;min-width:120px">
+        <select id="f-dept" onchange="renderHistory()"><option value="">All Depts</option></select>
+        <select id="f-mv-status" onchange="renderHistory()"><option value="">All</option><option value="out">Out</option><option value="returned">Returned</option></select>
+        <input type="date" id="f-date" onchange="renderHistory()">
+      </div>
+      <div class="table-wrap">
+        <table><thead><tr><th>Staff</th><th>Dept</th><th>Destination</th><th>Check-Out</th><th>Check-In</th><th>Status</th></tr></thead>
+        <tbody id="tbl-hist"></tbody></table>
+      </div>
+    </div>
+
+    <!-- MY TASKS -->
+    <div class="page" id="page-mytasks">
+      <div class="topbar"><div><h2>My Tasks</h2></div></div>
+      <div class="rotation-tabs" id="mytasks-rot-tabs">
+        <div class="rot-tab active" onclick="filterMyTasks(0,this)">All</div>
+        <div class="rot-tab" onclick="filterMyTasks(1,this)">Rotation 1</div>
+        <div class="rot-tab" onclick="filterMyTasks(2,this)">Rotation 2</div>
+        <div class="rot-tab" onclick="filterMyTasks(3,this)">Rotation 3</div>
+        <div class="rot-tab" onclick="filterMyTasks(4,this)">Rotation 4</div>
+      </div>
+      <div class="table-wrap">
+        <table><thead><tr><th>Task</th><th>Team</th><th>Rotation</th><th>Supervisor</th><th>Due</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody id="tbl-my-tasks"></tbody></table>
+      </div>
+    </div>
+
+    <!-- ASSIGN -->
+    <div class="page" id="page-assign">
+      <div class="topbar"><div><h2>Assign Task</h2></div></div>
+      <div class="form-card">
+        <h3>📌 New Task Assignment</h3>
+        <div class="form-grid">
+          <div>
+            <div class="form-row"><label>Task Title</label><input type="text" id="task-title" placeholder="Task name"></div>
+            <div class="form-row"><label>Associate</label><select id="task-assignee"></select></div>
+            <div class="form-row"><label>Supervisor</label><select id="task-supervisor"></select></div>
+            <div class="form-row"><label>Rotation</label><select id="task-rotation"><option value="1">Rotation 1</option><option value="2">Rotation 2</option><option value="3">Rotation 3</option><option value="4">Rotation 4</option></select></div>
+            <div class="form-row"><label>Assigned Team</label><select id="task-team"><option>DRP</option><option>COMPSEC</option><option>BANKING</option><option>TAX</option><option>FINTECH</option><option>AVIATION</option><option>Other</option></select></div>
+          </div>
+          <div>
+            <div class="form-row"><label>Description</label><textarea id="task-desc" placeholder="Task details..." style="min-height:80px"></textarea></div>
+            <div class="form-row"><label>Date</label><input type="date" id="task-date"></div>
+            <div class="form-row"><label>Due Date</label><input type="date" id="task-due"></div>
+            <div class="form-row"><label>Expected Time</label><input type="text" id="task-time" placeholder="e.g. 2 hours"></div>
+          </div>
+        </div>
+        <button class="btn-action btn-accent" id="btn-assign" onclick="assignTask()" style="max-width:220px;margin-top:8px">Assign Task + Notify Associate</button>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <h3>All Assigned Tasks</h3>
+          <div style="display:flex;gap:8px;align-items:center">
+            <select id="filter-assign-rot" onchange="renderAllTasks()" style="background:var(--navy);border:1px solid var(--border);border-radius:6px;padding:4px 8px;color:var(--text);font-size:11px"><option value="">All Rotations</option><option value="1">Rotation 1</option><option value="2">Rotation 2</option><option value="3">Rotation 3</option><option value="4">Rotation 4</option></select>
+            <button class="export-btn" onclick="exportTasksCSV()">⬇ Export</button>
+          </div>
+        </div>
+        <table><thead><tr><th>Task</th><th>Associate</th><th>Team</th><th>Rotation</th><th>Supervisor</th><th>Date</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody id="tbl-all-tasks"></tbody></table>
+      </div>
+    </div>
+
+    <!-- EVALUATE -->
+    <div class="page" id="page-evaluate">
+      <div class="topbar"><div><h2>Evaluate Performance</h2></div></div>
+      <div class="table-wrap">
+        <div class="table-header"><h3>Tasks Awaiting Evaluation</h3></div>
+        <table><thead><tr><th>Task</th><th>Associate</th><th>Team</th><th>Rotation</th><th>Time Spent</th><th>Completion Notes</th><th>Action</th></tr></thead>
+        <tbody id="tbl-evaluate"></tbody></table>
+      </div>
+    </div>
+
+    <!-- APPROVALS -->
+    <div class="page" id="page-approvals">
+      <div class="topbar"><div><h2>Sign-Off Approvals</h2></div></div>
+      <div class="table-wrap" style="margin-bottom:14px">
+        <div class="table-header"><h3>Pending Approvals</h3></div>
+        <table><thead><tr><th>Task</th><th>Associate</th><th>Team</th><th>Rotation</th><th>Avg Score</th><th>Feedback</th><th>Action</th></tr></thead>
+        <tbody id="tbl-approvals"></tbody></table>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header"><h3>Completed Sign-Offs</h3></div>
+        <table><thead><tr><th>Task</th><th>Associate</th><th>Rotation</th><th>Avg Score</th><th>Approved By</th><th>Date</th><th>Status</th></tr></thead>
+        <tbody id="tbl-signoffs"></tbody></table>
+      </div>
+    </div>
+
+    <!-- REPORTS -->
+    <div class="page" id="page-reports">
+      <div class="topbar"><div><h2>Performance Reports</h2></div><button class="export-btn" onclick="exportPerfCSV()">⬇ Export CSV</button></div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="sc-label">Total Tasks</div><div class="sc-val" style="color:var(--text)" id="rpt-total">—</div></div>
+        <div class="stat-card"><div class="sc-label">Avg Score</div><div class="sc-val" style="color:var(--warn)" id="rpt-avg">—</div></div>
+        <div class="stat-card"><div class="sc-label">Approved</div><div class="sc-val" style="color:var(--accent)" id="rpt-approved">—</div></div>
+        <div class="stat-card"><div class="sc-label">Associates</div><div class="sc-val" style="color:var(--accent2)" id="rpt-associates">—</div></div>
+      </div>
+      <div class="filters" style="margin-top:4px">
+        <select id="rpt-associate" onchange="renderReports()"><option value="">All Associates</option></select>
+        <select id="rpt-rotation" onchange="renderReports()"><option value="">All Rotations</option><option value="1">Rotation 1</option><option value="2">Rotation 2</option><option value="3">Rotation 3</option><option value="4">Rotation 4</option></select>
+        <select id="rpt-team" onchange="renderReports()"><option value="">All Teams</option><option>DRP</option><option>COMPSEC</option><option>BANKING</option><option>TAX</option><option>FINTECH</option><option>AVIATION</option></select>
+      </div>
+      <div class="table-wrap">
+        <table><thead><tr><th>Task</th><th>Associate</th><th>Team</th><th>Rot</th><th>Analytical</th><th>Legal Admin</th><th>Legal Draft</th><th>Comm.</th><th>Time Mgmt</th><th>Ownership</th><th>Avg</th><th>Action</th></tr></thead>
+        <tbody id="tbl-reports"></tbody></table>
+      </div>
+    </div>
+
+    <!-- ASSOCIATES -->
+    <div class="page" id="page-associates">
+      <div class="topbar"><div><h2>Associate Overview</h2></div></div>
+      <div class="filters">
+        <select id="assoc-team" onchange="renderAssociates()"><option value="">All Teams</option><option>DRP</option><option>COMPSEC</option><option>BANKING</option><option>TAX</option><option>FINTECH</option><option>AVIATION</option></select>
+        <select id="assoc-rot" onchange="renderAssociates()"><option value="">All Rotations</option><option value="1">Rotation 1</option><option value="2">Rotation 2</option><option value="3">Rotation 3</option><option value="4">Rotation 4</option></select>
+      </div>
+      <div id="associates-list"></div>
+    </div>
+
+    <!-- ADMIN -->
+    <div class="page" id="page-admin">
+      <div class="topbar"><div><h2>Admin Panel</h2></div></div>
+      <div class="form-grid">
+        <div class="form-card"><h3>👥 Registered Users</h3><div id="user-list"><span class="spinner"></span></div></div>
+        <div class="form-card">
+          <h3>ℹ️ SSO User Management</h3>
+          <div style="background:var(--navy);border-radius:8px;padding:14px;font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:14px">
+            <div style="color:var(--accent);font-weight:600;margin-bottom:8px">🔐 Microsoft SSO Active</div>
+            Users are provisioned automatically on first sign-in via Microsoft SSO.<br><br>
+            <strong style="color:var(--text)">To manage roles:</strong><br>
+            Go to <a href="https://entra.microsoft.com" target="_blank" style="color:var(--accent2)">entra.microsoft.com</a> → Groups and add/remove users from:<br><br>
+            • <strong style="color:var(--accent)">StaffTrack-Admins</strong><br>
+            • <strong style="color:var(--warn)">StaffTrack-Supervisors</strong><br>
+            • <strong style="color:var(--accent2)">StaffTrack-Associates</strong>
+          </div>
+          <div style="padding-top:14px;border-top:1px solid var(--border)">
+            <button class="export-btn" onclick="exportMvCSV()" style="width:100%;justify-content:center;margin-bottom:7px">⬇ Movement Log</button>
+            <button class="export-btn" onclick="exportUsers()" style="width:100%;justify-content:center;margin-bottom:7px">⬇ User List</button>
+            <button class="export-btn" onclick="exportPerfCSV()" style="width:100%;justify-content:center">⬇ Performance Report</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EVAL MODAL -->
+<div class="modal-overlay" id="modal-eval">
+  <div class="modal">
+    <h3>⭐ Performance Evaluation <span class="modal-close" onclick="closeModal('modal-eval')">×</span></h3>
+    <input type="hidden" id="eval-task-id">
+    <div id="eval-task-info"></div>
+    <div style="margin:14px 0 8px;font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.06em">Review Criteria — 1=Unsatisfactory · 2=Developing · 3=Meets · 4=Exceeds</div>
+    <div class="criteria-grid">
+      <div class="criteria-item"><label>📊 Analytical Skills</label><div style="font-size:10px;color:var(--text3);margin-bottom:6px">Eye for detail, understanding objectives</div><div class="score-btns" id="scores-analytical"></div></div>
+      <div class="criteria-item"><label>⚖️ Legal Administration</label><div style="font-size:10px;color:var(--text3);margin-bottom:6px">Research, legal solutions, record-keeping</div><div class="score-btns" id="scores-legal-admin"></div></div>
+      <div class="criteria-item"><label>📝 Legal Drafting</label><div style="font-size:10px;color:var(--text3);margin-bottom:6px">Templates, modifications for similar scenarios</div><div class="score-btns" id="scores-legal-drafting"></div></div>
+      <div class="criteria-item"><label>💬 Communication</label><div style="font-size:10px;color:var(--text3);margin-bottom:6px">Clear, accurate, concise; listens well</div><div class="score-btns" id="scores-communication"></div></div>
+      <div class="criteria-item"><label>⏰ Time Management</label><div style="font-size:10px;color:var(--text3);margin-bottom:6px">Manages time, communicates challenges</div><div class="score-btns" id="scores-time-management"></div></div>
+      <div class="criteria-item"><label>🚀 Ownership & Initiative</label><div style="font-size:10px;color:var(--text3);margin-bottom:6px">Takes responsibility, proactive mindset</div><div class="score-btns" id="scores-ownership"></div></div>
+    </div>
+    <div id="avg-score-display" style="text-align:center;padding:10px;background:var(--navy);border-radius:8px;margin-bottom:12px;font-size:12px;color:var(--text2)">Average Score: <span id="avg-score-val" style="font-size:1.1rem;font-weight:700">—</span></div>
+    <div class="form-row"><label>Supervisor's Feedback</label><textarea id="eval-feedback" placeholder="Detailed feedback..."></textarea></div>
+    <div class="form-row"><label>Time Spent (actual)</label><input type="text" id="eval-time" placeholder="e.g. 3 hours"></div>
+    <button class="btn-action btn-accent" id="btn-submit-eval" onclick="submitEvaluation()">Submit Evaluation → Send for Approval</button>
+  </div>
+</div>
+
+<!-- UPDATE MODAL -->
+<div class="modal-overlay" id="modal-update">
+  <div class="modal">
+    <h3>📝 Update Task <span class="modal-close" onclick="closeModal('modal-update')">×</span></h3>
+    <input type="hidden" id="update-task-id">
+    <div id="update-task-info"></div>
+    <div class="form-row" style="margin-top:12px"><label>Status</label><select id="update-status"><option value="In Progress">In Progress</option><option value="Completed">Completed</option></select></div>
+    <div class="form-row"><label>Time Spent</label><input type="text" id="update-time" placeholder="e.g. 2 hours"></div>
+    <div class="form-row"><label>Completion Notes</label><textarea id="update-notes" placeholder="Describe what was done..."></textarea></div>
+    <button class="btn-action btn-accent" id="btn-submit-update" onclick="submitTaskUpdate()">Update Task</button>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="modal-overlay" id="modal-detail">
+  <div class="modal">
+    <h3>📌 Task Detail & Audit Trail <span class="modal-close" onclick="closeModal('modal-detail')">×</span></h3>
+    <div id="detail-content"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CONFIG ──────────────────────────────────────────────
+const SUPA_URL='https://uxxlmmlnagqriklkdosk.supabase.co';
+const SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV4eGxtbWxuYWdxcmlrbGtkb3NrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4NDYxNzcsImV4cCI6MjA5MzQyMjE3N30._p9fYjZMrXm6YEPzwMBCC5FLFXaeuFcA12gVVM_duS0';
+const NOTIFY_URL='https://uxxlmmlnagqriklkdosk.supabase.co/functions/v1/notify';
+
+const MSAL_CONFIG={
+  auth:{
+    clientId:'15a82c25-d491-481b-be57-ad57cb4adaff',
+    authority:'https://login.microsoftonline.com/812cddd0-788f-46dd-8754-42fe8a22dab5',
+    redirectUri:window.location.href.split('?')[0].split('#')[0]
+  },
+  cache:{cacheLocation:'sessionStorage',storeAuthStateInCookie:false}
+};
+
+const GROUP_IDS={
+  admin:'5c633144-0a40-44c8-9378-654e725412ba',
+  supervisor:'8629fbfb-b737-4898-9bc0-b6ea3ce4c7f7',
+  staff:'0b59960f-769e-41e8-a2bd-b3e8ba9d66d1'
+};
+
+const SCOPES=['openid','profile','email','User.Read','GroupMember.Read.All'];
+
+const sb=supabase.createClient(SUPA_URL,SUPA_KEY);
+let msalInstance=null;
+let CU=null,allUsers=[],allMovements=[],allTasks=[];
+let evalScores={analytical:0,'legal-admin':0,'legal-drafting':0,communication:0,'time-management':0,ownership:0};
+let myTasksRotFilter=0;
+let isSSOUser=false;
+
+const COLORS=['#00c9a7','#0099ff','#ef9f27','#d4537e','#5dcaa5','#e24b4a','#97c459','#7f77dd'];
+const SCORE_LABELS={1:'Unsatisfactory',2:'Developing',3:'Meets',4:'Exceeds'};
+const SCORE_SHORT={1:'U',2:'D',3:'M',4:'E'};
+const CRITERIA_DB=['score_analytical','score_legal_admin','score_legal_drafting','score_communication','score_time_management','score_ownership'];
+
+const initials=n=>(n||'').split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+const colorFor=id=>{const i=parseInt(String(id).replace(/\D/g,'').slice(-3))%COLORS.length;return COLORS[isNaN(i)?0:i]};
+const fmtDT=iso=>{if(!iso)return'—';const d=new Date(iso);return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'})+' '+d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})};
+const fmtD=iso=>{if(!iso)return'—';return new Date(iso).toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})};
+const isOverdue=m=>!m.check_in&&m.expected_return&&new Date(m.expected_return)<new Date();
+const statusPill=s=>({Assigned:'pill-assigned','In Progress':'pill-progress',Completed:'pill-completed',Evaluated:'pill-evaluated',Approved:'pill-approved',Rejected:'pill-rejected'}[s]||'pill-assigned');
+const rotPill=r=>`<span class="pill pill-r${r}">R${r}</span>`;
+function scoreBadge(s){if(!s)return'—';return`<span class="score-badge sb${s}">${SCORE_SHORT[s]}(${s})</span>`}
+function avgBadge(a){if(!a)return'—';const n=parseFloat(a);const c=n>=3.5?'sb4':n>=2.5?'sb3':n>=1.5?'sb2':'sb1';return`<span class="score-badge ${c}">${n.toFixed(2)}</span>`}
+
+// ── INIT ─────────────────────────────────────────────────
+async function init(){
+  setLoading('Initialising StaffTrack...');
+  try{
+    msalInstance=new msal.PublicClientApplication(MSAL_CONFIG);
+    await msalInstance.initialize();
+    // Handle redirect response
+    const resp=await msalInstance.handleRedirectPromise();
+    if(resp&&resp.account){
+      setLoading('Signing you in...');
+      await processMSALResponse(resp);
+      return;
+    }
+    // Check existing session
+    const accounts=msalInstance.getAllAccounts();
+    if(accounts.length>0){
+      setLoading('Resuming session...');
+      try{
+        const silentResp=await msalInstance.acquireTokenSilent({scopes:SCOPES,account:accounts[0]});
+        await processMSALResponse(silentResp);
+        return;
+      }catch(e){msalInstance.clearCache()}
+    }
+  }catch(e){console.warn('MSAL init error:',e.message)}
+  hideLoading();
+}
+
+async function signInWithMicrosoft(){
+  const btn=document.getElementById('sso-btn');
+  btn.disabled=true;btn.textContent='Redirecting to Microsoft...';
+  try{
+    await msalInstance.loginRedirect({scopes:SCOPES,prompt:'select_account'});
+  }catch(e){
+    showToast('SSO error: '+e.message,'e');
+    btn.disabled=false;
+    btn.innerHTML=`<svg viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg" style="width:20px;height:20px"><rect x="1" y="1" width="9" height="9" fill="#f25022"/><rect x="11" y="1" width="9" height="9" fill="#7fba00"/><rect x="1" y="11" width="9" height="9" fill="#00a4ef"/><rect x="11" y="11" width="9" height="9" fill="#ffb900"/></svg> Sign in with Microsoft`;
+  }
+}
+
+async function processMSALResponse(resp){
+  try{
+    const account=resp.account;
+    const email=account.username;
+    const name=account.name||email.split('@')[0];
+    // Get group memberships
+    const graphResp=await fetch('https://graph.microsoft.com/v1.0/me/memberOf?$select=id,displayName',{
+      headers:{Authorization:`Bearer ${resp.accessToken}`}
+    });
+    const graphData=await graphResp.json();
+    const groupIds=(graphData.value||[]).map(g=>g.id);
+    // Determine role from groups
+    let role='staff';
+    if(groupIds.includes(GROUP_IDS.admin))role='admin';
+    else if(groupIds.includes(GROUP_IDS.supervisor))role='supervisor';
+    else if(groupIds.includes(GROUP_IDS.staff))role='staff';
+    // Upsert user in Supabase
+    const{data:existing}=await sb.from('users').select('*').eq('email',email).single();
+    let userData;
+    if(existing){
+      const{data:updated}=await sb.from('users').update({name,role,last_login:new Date().toISOString()}).eq('email',email).select().single();
+      userData=updated||existing;
+      userData.role=role;// ensure role is updated
+    }else{
+      const dept=email.split('@')[0].length>0?'aelex.com':'General';
+      const{data:created}=await sb.from('users').insert({name,email,password:'sso_user',role,department:dept}).select().single();
+      userData=created;
+    }
+    if(!userData)throw new Error('Could not create user session');
+    isSSOUser=true;
+    await launchApp(userData);
+  }catch(e){
+    console.error('SSO process error:',e);
+    hideLoading();
+    document.getElementById('login-err').textContent='SSO error: '+e.message;
+  }
+}
+
+async function doLocalLogin(){
+  const email=document.getElementById('login-email').value.trim();
+  const pass=document.getElementById('login-pass').value;
+  const btn=document.getElementById('login-btn');
+  if(!email||!pass){document.getElementById('login-err').textContent='Enter email and password';return}
+  btn.disabled=true;btn.textContent='Signing in...';
+  try{
+    const{data,error}=await sb.from('users').select('*').eq('email',email).eq('password',pass).single();
+    if(error||!data){document.getElementById('login-err').textContent='Invalid credentials';btn.disabled=false;btn.textContent='Sign In';return}
+    isSSOUser=false;
+    await launchApp(data);
+  }catch(e){document.getElementById('login-err').textContent='Error: '+e.message;btn.disabled=false;btn.textContent='Sign In'}
+}
+
+async function launchApp(userData){
+  CU=userData;
+  document.getElementById('auth-screen').style.display='none';
+  document.getElementById('app').style.display='block';
+  document.getElementById('sb-name').textContent=userData.name;
+  document.getElementById('sb-dept').textContent=userData.department||userData.email||'';
+  const b=document.getElementById('sb-badge');
+  b.textContent=userData.role==='admin'?'Admin':userData.role==='supervisor'?'Supervisor':'Associate';
+  b.className='u-badge '+(userData.role==='admin'?'badge-admin':userData.role==='supervisor'?'badge-supervisor':'badge-staff');
+  const ssoInd=document.getElementById('sso-indicator');
+  ssoInd.style.display=isSSOUser?'inline-flex':'none';
+  const isAdmin=userData.role==='admin',isSup=userData.role==='supervisor'||isAdmin;
+  document.querySelectorAll('.admin-only').forEach(el=>el.style.display=isAdmin?'':'none');
+  ['nav-assign','nav-evaluate','nav-approvals','nav-reports','nav-associates'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.style.display=isSup?'flex':'none';
+  });
+  updateClock();setInterval(updateClock,60000);
+  hideLoading();
+  await refreshAll();
+}
+
+async function doLogout(){
+  if(isSSOUser&&msalInstance){
+    const accounts=msalInstance.getAllAccounts();
+    if(accounts.length>0){
+      try{await msalInstance.logoutRedirect({account:accounts[0],postLogoutRedirectUri:window.location.href}); return;}
+      catch(e){console.warn('MSAL logout error:',e)}
+    }
+  }
+  CU=null;isSSOUser=false;allUsers=[];allMovements=[];allTasks=[];
+  document.getElementById('app').style.display='none';
+  document.getElementById('auth-screen').style.display='flex';
+  document.getElementById('login-btn').disabled=false;document.getElementById('login-btn').textContent='Sign In';
+  document.getElementById('login-err').textContent='';
+}
+
+function setLoading(msg){
+  document.getElementById('loading-text').textContent=msg;
+  document.getElementById('loading-overlay').classList.remove('hidden');
+}
+function hideLoading(){document.getElementById('loading-overlay').classList.add('hidden')}
+function updateClock(){document.getElementById('dash-time').textContent=new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+' • '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}
+
+async function refreshAll(){
+  try{
+    const[{data:u},{data:m},{data:t}]=await Promise.all([
+      sb.from('users').select('*').order('name'),
+      sb.from('movements').select('*').order('check_out',{ascending:false}),
+      sb.from('tasks').select('*').order('created_at',{ascending:false})
+    ]);
+    allUsers=u||[];allMovements=m||[];allTasks=t||[];
+    renderDashboard();updateApprovalBadge();
+  }catch(e){showToast('DB error: '+e.message,'e')}
+}
+
+function renderDashboard(){
+  const out=allMovements.filter(m=>!m.check_in);
+  const rated=allTasks.filter(t=>t.avg_score);
+  const avg=rated.length?(rated.reduce((a,t)=>a+parseFloat(t.avg_score),0)/rated.length).toFixed(2):'—';
+  document.getElementById('stat-out').textContent=out.length;
+  document.getElementById('stat-tasks').textContent=allTasks.filter(t=>['Assigned','In Progress'].includes(t.status)).length;
+  document.getElementById('stat-approvals').textContent=allTasks.filter(t=>t.status==='Evaluated').length;
+  document.getElementById('stat-avg').textContent=avg==='—'?'—':avg+'/4';
+  document.getElementById('tbl-out').innerHTML=out.length?out.slice(0,4).map(m=>{const c=colorFor(m.user_id);const od=isOverdue(m);return`<tr><td><div class="flex-c"><div class="avatar" style="background:${c}22;color:${c}">${initials(m.name)}</div>${m.name}</div></td><td>${m.department||'—'}</td><td>${m.destination||'—'}</td><td>${fmtDT(m.check_out)}</td><td>${fmtDT(m.expected_return)}</td><td><span class="pill ${od?'pill-rejected':'pill-progress'}">${od?'Overdue':'Out'}</span></td></tr>`}).join(''):'<tr class="empty-row"><td colspan="6">No staff currently out</td></tr>';
+  document.getElementById('tbl-recent-tasks').innerHTML=allTasks.length?allTasks.slice(0,6).map(t=>`<tr><td>${t.title}</td><td>${t.associate_name||'—'}</td><td><span class="team-tag">${t.assigned_team||'—'}</span></td><td>${rotPill(t.rotation)}</td><td><span class="pill ${statusPill(t.status)}">${t.status}</span></td><td>${avgBadge(t.avg_score)}</td></tr>`).join(''):'<tr class="empty-row"><td colspan="6">No tasks yet</td></tr>';
+}
+
+function updateApprovalBadge(){const n=allTasks.filter(t=>t.status==='Evaluated').length;const b=document.getElementById('approval-badge');b.textContent=n;b.style.display=n>0?'inline':'none'}
+
+function showPage(id,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(el)el.classList.add('active');
+  ({movement:populateMovementSelects,history:()=>{populateDeptFilter();renderHistory()},mytasks:renderMyTasks,assign:()=>{populateTaskSelects();renderAllTasks()},evaluate:renderEvaluate,approvals:renderApprovals,reports:renderReports,associates:renderAssociates,admin:renderAdmin})[id]?.();
+}
+
+function populateMovementSelects(){
+  const outIds=new Set(allMovements.filter(m=>!m.check_in).map(m=>m.user_id));
+  document.getElementById('out-staff').innerHTML=allUsers.filter(u=>!outIds.has(u.id)).map(u=>`<option value="${u.id}">${u.name} (${u.department||'—'})</option>`).join('')||'<option>All staff are in</option>';
+  document.getElementById('in-staff').innerHTML=allUsers.filter(u=>outIds.has(u.id)).map(u=>`<option value="${u.id}">${u.name}</option>`).join('')||'<option>No staff out</option>';
+  const now=new Date();now.setHours(now.getHours()+2);
+  document.getElementById('out-return').value=now.toISOString().slice(0,16);
+}
+
+async function checkOut(){
+  const uid=document.getElementById('out-staff').value;const dest=document.getElementById('out-dest').value.trim();
+  if(!uid||!dest){showToast('Select staff and enter destination','e');return}
+  const u=allUsers.find(x=>x.id===uid);const btn=document.getElementById('btn-checkout');btn.disabled=true;btn.textContent='Saving...';
+  try{
+    const ret=document.getElementById('out-return').value;
+    const{error}=await sb.from('movements').insert({user_id:uid,name:u.name,department:u.department,destination:dest,check_out:new Date().toISOString(),expected_return:ret?new Date(ret).toISOString():null,note:document.getElementById('out-note').value});
+    if(error)throw error;
+    document.getElementById('out-dest').value='';document.getElementById('out-note').value='';
+    showToast(`${u.name} checked out`,'s');await refreshAll();populateMovementSelects();
+  }catch(e){showToast('Error: '+e.message,'e')}
+  btn.disabled=false;btn.textContent='Record Check-Out';
+}
+
+async function checkIn(){
+  const uid=document.getElementById('in-staff').value;if(!uid)return;
+  const mv=allMovements.find(m=>m.user_id===uid&&!m.check_in);if(!mv)return;
+  const btn=document.getElementById('btn-checkin');btn.disabled=true;btn.textContent='Saving...';
+  try{
+    const{error}=await sb.from('movements').update({check_in:new Date().toISOString(),return_note:document.getElementById('in-note').value||null}).eq('id',mv.id);
+    if(error)throw error;
+    document.getElementById('in-note').value='';
+    showToast(`${allUsers.find(x=>x.id===uid)?.name} checked in`,'s');await refreshAll();populateMovementSelects();
+  }catch(e){showToast('Error: '+e.message,'e')}
+  btn.disabled=false;btn.textContent='Record Check-In';
+}
+
+function populateDeptFilter(){
+  const depts=[...new Set(allUsers.map(u=>u.department).filter(Boolean))];
+  const sel=document.getElementById('f-dept');const cur=sel.value;
+  sel.innerHTML='<option value="">All Depts</option>'+depts.map(d=>`<option value="${d}" ${d===cur?'selected':''}>${d}</option>`).join('');
+}
+
+function renderHistory(){
+  const search=document.getElementById('f-search').value.toLowerCase();
+  const dept=document.getElementById('f-dept').value;
+  const status=document.getElementById('f-mv-status').value;
+  const date=document.getElementById('f-date').value;
+  const data=allMovements.filter(m=>{
+    if(search&&!(m.name||'').toLowerCase().includes(search)&&!(m.destination||'').toLowerCase().includes(search))return false;
+    if(dept&&m.department!==dept)return false;
+    if(status==='out'&&m.check_in)return false;
+    if(status==='returned'&&!m.check_in)return false;
+    if(date&&!(m.check_out||'').startsWith(date))return false;
+    return true;
+  });
+  document.getElementById('tbl-hist').innerHTML=data.length?data.map(m=>{const od=isOverdue(m);const st=m.check_in?'returned':od?'over':'out';const pill=st==='returned'?'pill-completed':st==='over'?'pill-rejected':'pill-progress';const c=colorFor(m.user_id);return`<tr><td><div class="flex-c"><div class="avatar" style="background:${c}22;color:${c}">${initials(m.name)}</div>${m.name||'—'}</div></td><td>${m.department||'—'}</td><td>${m.destination||'—'}</td><td>${fmtDT(m.check_out)}</td><td>${fmtDT(m.check_in)}</td><td><span class="pill ${pill}">${st==='returned'?'Returned':st==='over'?'Overdue':'Out'}</span></td></tr>`}).join(''):'<tr class="empty-row"><td colspan="6">No records</td></tr>';
+}
+
+function populateTaskSelects(){
+  document.getElementById('task-assignee').innerHTML=allUsers.map(u=>`<option value="${u.id}">${u.name} (${u.department||'—'})</option>`).join('');
+  document.getElementById('task-supervisor').innerHTML=allUsers.filter(u=>u.role==='supervisor'||u.role==='admin').map(u=>`<option value="${u.id}">${u.name}</option>`).join('');
+  const today=new Date();today.setDate(today.getDate()+7);
+  document.getElementById('task-due').value=today.toISOString().slice(0,10);
+  document.getElementById('task-date').value=new Date().toISOString().slice(0,10);
+}
+
+async function assignTask(){
+  const title=document.getElementById('task-title').value.trim();
+  const aid=document.getElementById('task-assignee').value;const sid=document.getElementById('task-supervisor').value;
+  if(!title||!aid){showToast('Enter title and associate','e');return}
+  const au=allUsers.find(x=>x.id===aid);const su=allUsers.find(x=>x.id===sid);
+  const taskData={title,description:document.getElementById('task-desc').value,associate_id:aid,associate_name:au?.name||'',supervisor_id:sid,supervisor_name:su?.name||'',rotation:parseInt(document.getElementById('task-rotation').value),assigned_team:document.getElementById('task-team').value,date:document.getElementById('task-date').value||null,due_date:document.getElementById('task-due').value||null,time_spent:document.getElementById('task-time').value,status:'Assigned',assigned_by:CU.name,assigned_at:new Date().toISOString()};
+  const btn=document.getElementById('btn-assign');btn.disabled=true;btn.textContent='Saving...';
+  try{
+    const{error}=await sb.from('tasks').insert(taskData);if(error)throw error;
+    if(au?.email)await notify('task_assigned',taskData,au.email,au.name);
+    document.getElementById('task-title').value='';document.getElementById('task-desc').value='';document.getElementById('task-time').value='';
+    showToast(`Task assigned to ${au?.name}`,'s');await refreshAll();renderAllTasks();
+  }catch(e){showToast('Error: '+e.message,'e')}
+  btn.disabled=false;btn.textContent='Assign Task + Notify Associate';
+}
+
+function filterMyTasks(rot,el){myTasksRotFilter=rot;document.querySelectorAll('#mytasks-rot-tabs .rot-tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');renderMyTasks()}
+
+function renderMyTasks(){
+  let my=allTasks.filter(t=>t.associate_id===CU.id);
+  if(myTasksRotFilter>0)my=my.filter(t=>t.rotation===myTasksRotFilter);
+  document.getElementById('tbl-my-tasks').innerHTML=my.length?my.map(t=>`<tr><td>${t.title}</td><td><span class="team-tag">${t.assigned_team||'—'}</span></td><td>${rotPill(t.rotation)}</td><td>${t.supervisor_name||'—'}</td><td>${fmtD(t.due_date)}</td><td><span class="pill ${statusPill(t.status)}">${t.status}</span></td><td>${['Assigned','In Progress'].includes(t.status)?`<button class="btn-sm btn-sm-accent" onclick="openUpdateModal('${t.id}')">Update</button>`:`<button class="btn-sm" onclick="openDetailModal('${t.id}')">View</button>`}</td></tr>`).join(''):'<tr class="empty-row"><td colspan="7">No tasks assigned to you</td></tr>';
+}
+
+function renderAllTasks(){
+  const rotF=document.getElementById('filter-assign-rot').value;
+  let data=rotF?allTasks.filter(t=>t.rotation===parseInt(rotF)):allTasks;
+  document.getElementById('tbl-all-tasks').innerHTML=data.length?data.map(t=>`<tr><td>${t.title}</td><td>${t.associate_name||'—'}</td><td><span class="team-tag">${t.assigned_team||'—'}</span></td><td>${rotPill(t.rotation)}</td><td>${t.supervisor_name||'—'}</td><td>${fmtD(t.date)}</td><td><span class="pill ${statusPill(t.status)}">${t.status}</span></td><td><button class="btn-sm" onclick="openDetailModal('${t.id}')">View</button></td></tr>`).join(''):'<tr class="empty-row"><td colspan="8">No tasks yet</td></tr>';
+}
+
+function renderEvaluate(){
+  const toEval=allTasks.filter(t=>t.status==='Completed'&&(t.supervisor_id===CU.id||CU.role==='admin'));
+  document.getElementById('tbl-evaluate').innerHTML=toEval.length?toEval.map(t=>`<tr><td>${t.title}</td><td>${t.associate_name||'—'}</td><td><span class="team-tag">${t.assigned_team||'—'}</span></td><td>${rotPill(t.rotation)}</td><td>${t.time_spent||'—'}</td><td style="max-width:160px">${t.completion_notes||'—'}</td><td><button class="btn-sm btn-sm-warn" onclick="openEvalModal('${t.id}')">Evaluate</button></td></tr>`).join(''):'<tr class="empty-row"><td colspan="7">No completed tasks awaiting evaluation</td></tr>';
+}
+
+function renderApprovals(){
+  const pending=allTasks.filter(t=>t.status==='Evaluated'&&(t.supervisor_id===CU.id||CU.role==='admin'));
+  const done=allTasks.filter(t=>['Approved','Rejected'].includes(t.status));
+  document.getElementById('tbl-approvals').innerHTML=pending.length?pending.map(t=>`<tr><td>${t.title}</td><td>${t.associate_name||'—'}</td><td><span class="team-tag">${t.assigned_team||'—'}</span></td><td>${rotPill(t.rotation)}</td><td>${avgBadge(t.avg_score)}</td><td style="max-width:140px">${t.supervisor_feedback||'—'}</td><td style="display:flex;gap:4px;padding-top:8px"><button class="btn-sm btn-sm-accent" onclick="signOff('${t.id}','Approved')">Approve</button><button class="btn-sm btn-sm-danger" onclick="signOff('${t.id}','Rejected')">Reject</button></td></tr>`).join(''):'<tr class="empty-row"><td colspan="7">No pending approvals</td></tr>';
+  document.getElementById('tbl-signoffs').innerHTML=done.length?done.map(t=>`<tr><td>${t.title}</td><td>${t.associate_name||'—'}</td><td>${rotPill(t.rotation)}</td><td>${avgBadge(t.avg_score)}</td><td>${t.approved_by||'—'}</td><td>${fmtDT(t.approved_at)}</td><td><span class="pill ${t.status==='Approved'?'pill-approved':'pill-rejected'}">${t.status}</span></td></tr>`).join(''):'<tr class="empty-row"><td colspan="7">No sign-offs yet</td></tr>';
+}
+
+function renderReports(){
+  const as=document.getElementById('rpt-associate').value;
+  const rot=document.getElementById('rpt-rotation').value;
+  const team=document.getElementById('rpt-team').value;
+  const sel=document.getElementById('rpt-associate');
+  if(sel.options.length<=1)allUsers.forEach(u=>{const o=document.createElement('option');o.value=u.id;o.textContent=u.name;sel.appendChild(o)});
+  let data=allTasks;
+  if(as)data=data.filter(t=>t.associate_id===as);
+  if(rot)data=data.filter(t=>t.rotation===parseInt(rot));
+  if(team)data=data.filter(t=>t.assigned_team===team);
+  const rated=allTasks.filter(t=>t.avg_score);
+  const avg=rated.length?(rated.reduce((a,t)=>a+parseFloat(t.avg_score),0)/rated.length).toFixed(2):'—';
+  const associates=new Set(allTasks.map(t=>t.associate_id).filter(Boolean));
+  document.getElementById('rpt-total').textContent=allTasks.length;
+  document.getElementById('rpt-avg').textContent=avg==='—'?'—':avg+'/4';
+  document.getElementById('rpt-approved').textContent=allTasks.filter(t=>t.status==='Approved').length;
+  document.getElementById('rpt-associates').textContent=associates.size;
+  document.getElementById('tbl-reports').innerHTML=data.length?data.map(t=>`<tr><td>${t.title}</td><td>${t.associate_name||'—'}</td><td><span class="team-tag">${t.assigned_team||'—'}</span></td><td>${rotPill(t.rotation)}</td><td>${scoreBadge(t.score_analytical)}</td><td>${scoreBadge(t.score_legal_admin)}</td><td>${scoreBadge(t.score_legal_drafting)}</td><td>${scoreBadge(t.score_communication)}</td><td>${scoreBadge(t.score_time_management)}</td><td>${scoreBadge(t.score_ownership)}</td><td>${avgBadge(t.avg_score)}</td><td><button class="btn-sm" onclick="openDetailModal('${t.id}')">Audit</button></td></tr>`).join(''):'<tr class="empty-row"><td colspan="12">No records</td></tr>';
+}
+
+function renderAssociates(){
+  const teamF=document.getElementById('assoc-team').value;
+  const rotF=document.getElementById('assoc-rot').value;
+  const associates=allUsers.filter(u=>u.role==='staff');
+  const container=document.getElementById('associates-list');
+  if(!associates.length){container.innerHTML='<div style="text-align:center;color:var(--text3);padding:30px">No associates found</div>';return}
+  container.innerHTML=associates.map(u=>{
+    let tasks=allTasks.filter(t=>t.associate_id===u.id);
+    if(teamF)tasks=tasks.filter(t=>t.assigned_team===teamF);
+    if(rotF)tasks=tasks.filter(t=>t.rotation===parseInt(rotF));
+    const rated=tasks.filter(t=>t.avg_score);
+    const avg=rated.length?(rated.reduce((a,t)=>a+parseFloat(t.avg_score),0)/rated.length).toFixed(2):null;
+    const c=colorFor(u.id);
+    const rotCounts=[1,2,3,4].map(r=>{const n=tasks.filter(t=>t.rotation===r).length;return n?`${rotPill(r)} <span style="font-size:10px;color:var(--text2)">${n}t</span>`:''}).filter(Boolean).join(' ');
+    const criteriaAvgs=CRITERIA_DB.map((k,i)=>{const scores=rated.map(t=>t[k]).filter(Boolean);const a=scores.length?(scores.reduce((x,y)=>x+y,0)/scores.length).toFixed(1):null;const labels=['Analytical','Legal Admin','Legal Draft','Comm.','Time Mgmt','Ownership'];return a?`<div style="font-size:10px;color:var(--text2)">${labels[i]}: <strong style="color:var(--text)">${a}/4</strong></div>`:''}).join('');
+    return`<div class="associate-card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><div class="flex-c" style="gap:10px"><div class="avatar" style="width:36px;height:36px;font-size:13px;background:${c}22;color:${c}">${initials(u.name)}</div><div><div style="font-size:13px;font-weight:600">${u.name}</div><div style="font-size:11px;color:var(--text2)">${u.email} · ${u.department||'—'} ${isSSOUser?'<span class="sso-badge">🔐 SSO</span>':''}</div></div></div><div style="text-align:right"><div style="font-size:11px;color:var(--text2)">Avg Score</div><div style="font-size:1.2rem;font-weight:700">${avg?avgBadge(avg):'<span style="color:var(--text3)">No data</span>'}</div></div></div><div style="margin-bottom:8px">${rotCounts||'<span style="font-size:11px;color:var(--text3)">No tasks assigned</span>'}</div>${criteriaAvgs?`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px">${criteriaAvgs}</div>`:''}</div>`;
+  }).join('');
+}
+
+function buildScoreBtns(containerId,criteriaKey){
+  const container=document.getElementById(containerId);container.innerHTML='';
+  [1,2,3,4].forEach(s=>{const btn=document.createElement('button');btn.className=`score-btn s${s}`;btn.textContent=SCORE_SHORT[s];btn.title=SCORE_LABELS[s];btn.onclick=()=>setScore(criteriaKey,s);container.appendChild(btn)});
+}
+
+function setScore(key,val){
+  evalScores[key]=val;
+  const map={analytical:'scores-analytical','legal-admin':'scores-legal-admin','legal-drafting':'scores-legal-drafting',communication:'scores-communication','time-management':'scores-time-management',ownership:'scores-ownership'};
+  document.getElementById(map[key]).querySelectorAll('.score-btn').forEach((btn,i)=>btn.classList.toggle('active',i+1===val));
+  updateAvgDisplay();
+}
+
+function updateAvgDisplay(){
+  const vals=Object.values(evalScores).filter(v=>v>0);
+  if(!vals.length){document.getElementById('avg-score-val').textContent='—';return}
+  const avg=(vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2);
+  const cls=parseFloat(avg)>=3.5?'sb4':parseFloat(avg)>=2.5?'sb3':parseFloat(avg)>=1.5?'sb2':'sb1';
+  document.getElementById('avg-score-val').innerHTML=`<span class="score-badge ${cls}" style="font-size:1rem;padding:4px 12px">${avg}/4 — ${parseFloat(avg)>=3.5?'Exceeds':parseFloat(avg)>=2.5?'Meets':parseFloat(avg)>=1.5?'Developing':'Unsatisfactory'}</span>`;
+}
+
+function openEvalModal(tid){
+  const t=allTasks.find(x=>x.id===tid);if(!t)return;
+  document.getElementById('eval-task-id').value=tid;
+  evalScores={analytical:0,'legal-admin':0,'legal-drafting':0,communication:0,'time-management':0,ownership:0};
+  ['scores-analytical','scores-legal-admin','scores-legal-drafting','scores-communication','scores-time-management','scores-ownership'].forEach((id,i)=>buildScoreBtns(id,['analytical','legal-admin','legal-drafting','communication','time-management','ownership'][i]));
+  document.getElementById('avg-score-val').textContent='—';
+  document.getElementById('eval-feedback').value='';document.getElementById('eval-time').value=t.time_spent||'';
+  document.getElementById('eval-task-info').innerHTML=`<div class="info-row"><span class="info-label">Task</span><span class="info-val">${t.title}</span></div><div class="info-row"><span class="info-label">Associate</span><span class="info-val">${t.associate_name}</span></div><div class="info-row"><span class="info-label">Team / Rotation</span><span class="info-val"><span class="team-tag">${t.assigned_team||'—'}</span> ${rotPill(t.rotation)}</span></div><div class="info-row"><span class="info-label">Completion Notes</span><span class="info-val">${t.completion_notes||'—'}</span></div>`;
+  document.getElementById('modal-eval').classList.add('open');
+}
+
+async function submitEvaluation(){
+  const tid=document.getElementById('eval-task-id').value;
+  const vals=Object.values(evalScores).filter(v=>v>0);
+  if(vals.length<6){showToast(`Score all 6 criteria (${vals.length}/6 done)`,'e');return}
+  const avg=(vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2);
+  const btn=document.getElementById('btn-submit-eval');btn.disabled=true;btn.textContent='Saving...';
+  try{
+    const{error}=await sb.from('tasks').update({status:'Evaluated',score_analytical:evalScores.analytical,score_legal_admin:evalScores['legal-admin'],score_legal_drafting:evalScores['legal-drafting'],score_communication:evalScores.communication,score_time_management:evalScores['time-management'],score_ownership:evalScores.ownership,avg_score:parseFloat(avg),supervisor_feedback:document.getElementById('eval-feedback').value,time_spent:document.getElementById('eval-time').value||undefined,evaluated_by:CU.name,evaluated_at:new Date().toISOString()}).eq('id',tid);
+    if(error)throw error;
+    const t=allTasks.find(x=>x.id===tid);const sup=allUsers.find(x=>x.id===t?.supervisor_id);
+    if(sup?.email)await notify('task_completed',t,sup.email,sup.name);
+    showToast('Evaluation submitted','s');closeModal('modal-eval');await refreshAll();renderEvaluate();updateApprovalBadge();
+  }catch(e){showToast('Error: '+e.message,'e')}
+  btn.disabled=false;btn.textContent='Submit Evaluation → Send for Approval';
+}
+
+async function signOff(tid,decision){
+  try{
+    const{error}=await sb.from('tasks').update({status:decision,approved_by:CU.name,approved_at:new Date().toISOString()}).eq('id',tid);
+    if(error)throw error;
+    const t=allTasks.find(x=>x.id===tid);const staff=allUsers.find(x=>x.id===t?.associate_id);
+    if(staff?.email)await notify('evaluation_result',{...t,status:decision,approved_by:CU.name},staff.email,staff.name);
+    showToast(`Task ${decision} — associate notified`,'s');await refreshAll();renderApprovals();updateApprovalBadge();
+  }catch(e){showToast('Error: '+e.message,'e')}
+}
+
+function openUpdateModal(tid){
+  const t=allTasks.find(x=>x.id===tid);if(!t)return;
+  document.getElementById('update-task-id').value=tid;document.getElementById('update-notes').value='';document.getElementById('update-time').value=t.time_spent||'';document.getElementById('update-status').value='In Progress';
+  document.getElementById('update-task-info').innerHTML=`<div class="info-row"><span class="info-label">Task</span><span class="info-val">${t.title}</span></div><div class="info-row"><span class="info-label">Team / Rotation</span><span class="info-val"><span class="team-tag">${t.assigned_team||'—'}</span> ${rotPill(t.rotation)}</span></div><div class="info-row"><span class="info-label">Due</span><span class="info-val">${fmtD(t.due_date)}</span></div>`;
+  document.getElementById('modal-update').classList.add('open');
+}
+
+async function submitTaskUpdate(){
+  const tid=document.getElementById('update-task-id').value;const status=document.getElementById('update-status').value;
+  const btn=document.getElementById('btn-submit-update');btn.disabled=true;btn.textContent='Saving...';
+  try{
+    const upd={status,completion_notes:document.getElementById('update-notes').value,time_spent:document.getElementById('update-time').value||undefined};
+    if(status==='Completed')upd.completed_at=new Date().toISOString();
+    const{error}=await sb.from('tasks').update(upd).eq('id',tid);if(error)throw error;
+    if(status==='Completed'){const t=allTasks.find(x=>x.id===tid);const sup=allUsers.find(x=>x.id===t?.supervisor_id);if(sup?.email)await notify('task_completed',{...t,...upd},sup.email,sup.name)}
+    showToast(status==='Completed'?'Task completed — supervisor notified':'Task updated','s');
+    closeModal('modal-update');await refreshAll();renderMyTasks();
+  }catch(e){showToast('Error: '+e.message,'e')}
+  btn.disabled=false;btn.textContent='Update Task';
+}
+
+function openDetailModal(tid){
+  const t=allTasks.find(x=>x.id===tid);if(!t)return;
+  const steps=['Assigned','In Progress','Completed','Evaluated','Approved'];const ci=steps.indexOf(t.status);
+  const wf=steps.map((s,i)=>`<div class="w-step ${i<ci?'done':i===ci?'active-s':''}"><div class="w-dot">${i<ci?'✓':i+1}</div>${s}</div>${i<steps.length-1?`<div class="w-line ${i<ci?'done':''}"></div>`:''}`).join('');
+  const criteriaRows=[[t.score_analytical,'Analytical Skills'],[t.score_legal_admin,'Legal Administration'],[t.score_legal_drafting,'Legal Drafting'],[t.score_communication,'Communication'],[t.score_time_management,'Time Management'],[t.score_ownership,'Ownership & Initiative']].map(([s,l])=>`<div class="info-row"><span class="info-label">${l}</span><span class="info-val">${s?`${scoreBadge(s)} ${SCORE_LABELS[s]}`:'—'}</span></div>`).join('');
+  document.getElementById('detail-content').innerHTML=`<div class="workflow-steps">${wf}</div><div class="info-row"><span class="info-label">Task</span><span class="info-val">${t.title}</span></div><div class="info-row"><span class="info-label">Associate</span><span class="info-val">${t.associate_name}</span></div><div class="info-row"><span class="info-label">Team</span><span class="info-val"><span class="team-tag">${t.assigned_team||'—'}</span></span></div><div class="info-row"><span class="info-label">Rotation</span><span class="info-val">${rotPill(t.rotation)}</span></div><div class="info-row"><span class="info-label">Description</span><span class="info-val">${t.description||'—'}</span></div><div class="info-row"><span class="info-label">Supervisor</span><span class="info-val">${t.supervisor_name||'—'}</span></div><div class="info-row"><span class="info-label">Due Date</span><span class="info-val">${fmtD(t.due_date)}</span></div><div class="info-row"><span class="info-label">Assigned By</span><span class="info-val">${t.assigned_by||'—'} · ${fmtDT(t.assigned_at)}</span></div><div class="info-row"><span class="info-label">Time Spent</span><span class="info-val">${t.time_spent||'—'}</span></div><div class="info-row"><span class="info-label">Completion Notes</span><span class="info-val">${t.completion_notes||'—'}</span></div><div style="margin:10px 0 4px;font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.06em">Review Criteria</div>${criteriaRows}<div class="info-row"><span class="info-label">Average Score</span><span class="info-val">${avgBadge(t.avg_score)}</span></div><div class="info-row"><span class="info-label">Supervisor Feedback</span><span class="info-val">${t.supervisor_feedback||'—'}</span></div><div class="info-row"><span class="info-label">Evaluated By</span><span class="info-val">${t.evaluated_by||'—'} · ${fmtDT(t.evaluated_at)}</span></div><div class="info-row"><span class="info-label">Sign-Off</span><span class="info-val">${t.approved_by||'—'} · ${fmtDT(t.approved_at)}</span></div><div class="info-row"><span class="info-label">Status</span><span class="info-val"><span class="pill ${statusPill(t.status)}">${t.status}</span></span></div>`;
+  document.getElementById('modal-detail').classList.add('open');
+}
+
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+
+async function renderAdmin(){
+  await refreshAll();
+  document.getElementById('user-list').innerHTML=allUsers.map(u=>`<div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border)"><div class="flex-c" style="gap:8px"><div class="avatar" style="background:${colorFor(u.id)}22;color:${colorFor(u.id)}">${initials(u.name)}</div><div><div style="font-size:12px;font-weight:500">${u.name} ${u.password==='sso_user'?'<span class="sso-badge">🔐 SSO</span>':''}</div><div style="font-size:10px;color:var(--text2)">${u.email} · ${u.department||'—'} · <span class="pill ${u.role==='admin'?'pill-approved':u.role==='supervisor'?'pill-evaluated':'pill-progress'}" style="padding:1px 6px;font-size:9px">${u.role}</span></div></div></div><span style="font-size:10px;color:var(--text3)">${u.id===CU.id?'You':''}</span></div>`).join('');
+}
+
+async function notify(type,task,recipientEmail,recipientName){
+  try{await fetch(NOTIFY_URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${SUPA_KEY}`},body:JSON.stringify({type,task,recipientEmail,recipientName})})}
+  catch(e){console.warn('Email error:',e.message)}
+}
+
+function exportMvCSV(){dlCSV([['Name','Department','Destination','Check-Out','Expected Return','Check-In','Notes'],...allMovements.map(m=>[m.name,m.department,m.destination,fmtDT(m.check_out),fmtDT(m.expected_return),fmtDT(m.check_in),m.note||''])],'movement_log.csv')}
+function exportUsers(){dlCSV([['Name','Email','Department','Role','Auth'],...allUsers.map(u=>[u.name,u.email,u.department,u.role,u.password==='sso_user'?'Microsoft SSO':'Local'])],'staff_list.csv')}
+function exportTasksCSV(){dlCSV([['Task','Associate','Team','Rotation','Supervisor','Date','Due','Status'],...allTasks.map(t=>[t.title,t.associate_name,t.assigned_team,`Rotation ${t.rotation}`,t.supervisor_name,fmtD(t.date),fmtD(t.due_date),t.status])],'tasks.csv')}
+function exportPerfCSV(){dlCSV([['Task','Associate','Team','Rotation','Analytical','Legal Admin','Legal Drafting','Communication','Time Mgmt','Ownership','Avg Score','Supervisor','Feedback','Approved By','Date','Status'],...allTasks.filter(t=>t.avg_score).map(t=>[t.title,t.associate_name,t.assigned_team,`Rotation ${t.rotation}`,SCORE_LABELS[t.score_analytical]||'',SCORE_LABELS[t.score_legal_admin]||'',SCORE_LABELS[t.score_legal_drafting]||'',SCORE_LABELS[t.score_communication]||'',SCORE_LABELS[t.score_time_management]||'',SCORE_LABELS[t.score_ownership]||'',t.avg_score,t.supervisor_name,t.supervisor_feedback||'',t.approved_by||'',fmtDT(t.approved_at),t.status])],'performance_report.csv')}
+function dlCSV(rows,fn){const csv=rows.map(r=>r.map(c=>`"${String(c||'').replace(/"/g,'""')}"`).join(',')).join('\n');const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download=fn;a.click();showToast('Exported','s')}
+function showToast(msg,type='s'){const t=document.getElementById('toast');t.textContent=msg;t.className=`toast show toast-${type}`;setTimeout(()=>t.className='toast',3000)}
+
+// ── ALSO need last_login column ──────────────────────────
+// Run in Supabase SQL Editor:
+// alter table users add column if not exists last_login timestamptz;
+
+init();
+</script>
+</body>
+</html>
